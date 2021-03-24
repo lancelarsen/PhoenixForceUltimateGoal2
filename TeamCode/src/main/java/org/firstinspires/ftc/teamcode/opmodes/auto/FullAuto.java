@@ -4,6 +4,8 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
@@ -12,6 +14,7 @@ import org.firstinspires.ftc.teamcode.drive.BotMecanumDrive;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.Alliance;
+import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.StartingPosition;
 import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 
 public class FullAuto {
@@ -21,37 +24,37 @@ public class FullAuto {
         ZONE_C,
     }
 
-    private OpMode opMode;
-    private Alliance alliance;
+    private static LinearOpMode opMode;
+    private static Alliance alliance;
+    private static StartingPosition startingPosition;
 
-    private BotMecanumDrive drive;
-    private AppendagesAutonomous appendages;
-    private RingVision ringVision;
+    private static AppendagesAutonomous appendages;
+    private static RingVision ringVision;
 
-    private Pose2d initialPosition;
+    public static void init(LinearOpMode _opMode, Alliance _alliance, StartingPosition _startingPosition) {
+        opMode = _opMode;
+        alliance = _alliance;
+        startingPosition = _startingPosition;
 
-    public FullAuto(OpMode opMode, Alliance alliance) {
-        this.opMode = opMode;
-        this.alliance = alliance;
-    }
-
-    public void init() {
-        drive = new BotMecanumDrive(opMode.hardwareMap);
-        appendages = new AppendagesAutonomous(opMode.hardwareMap);
+        appendages = new AppendagesAutonomous(opMode);
         ringVision = new RingVision(opMode.hardwareMap);
 
-        initialPosition = new Pose2d(-62, alliance == Alliance.RED ? -50 : 50, Math.toRadians(180));
-        drive.setPoseEstimate(initialPosition);
-
         appendages.openGoalGrabber(true);
-        appendages.setShooterTilterAngle(0);
-        appendages.setCameraPosition(BotAppendages.CameraPosition.TOWARDS_RINGS);
+        appendages.setShooterTilterAngle(BotAppendages.ShooterAngle.SHOOTING);
 
-        ringVision.init();
+        ringVision.init(startingPosition);
         ringVision.setViewportPaused(false);
+
+        appendages.setBlinkinPattern(alliance == Alliance.RED ? RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_RED : RevBlinkinLedDriver.BlinkinPattern.HEARTBEAT_BLUE);
     }
 
-    public void run() {
+    public static void run() {
+
+        RingVision.RingCount ringCount = ringVision.getRingCount();
+        ringVision.setViewportPaused(true);
+
+        /*appendages.setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+
         RingVision.RingCount ringCount = ringVision.getRingCount();
         ringVision.setViewportPaused(true);
 
@@ -63,27 +66,48 @@ public class FullAuto {
             case ONE:
                 targetZone = TargetZone.ZONE_B;
                 break;
-        }
+        }*/
 
-        opMode.telemetry.addData("Target zone", targetZone);
-        opMode.telemetry.update();
+        //opMode.telemetry.addData("Target zone", targetZone);
+        //opMode.telemetry.update();
 
-        appendages.openGoalGrabber(false);
-        sleep(1000);
-        appendages.setGoalLifterPosition(BotAppendages.GoalLifterPosition.MIDDLE);
+        //Pose2d initialPosition = new Pose2d(-62, -50, Math.toRadians(0));
+        //Pose2d initialPosition = new Pose2d(20, 0, 0);
+        //drive.setPoseEstimate(initialPosition);
 
-        Pose2d endPosition = driveToZone(drive, initialPosition, targetZone, 7);
+        //appendages.openGoalGrabber(false);
+        //sleep(1000);
+        BotMecanumDrive drive = new BotMecanumDrive(opMode.hardwareMap);
+
+        //appendages.setGoalLifterPosition(BotAppendages.GoalLifterPosition.MIDDLE);
+//        Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
+//                .back(20)
+//                //.strafeLeft(20)
+//                //.lineToConstantHeading(new Vector2d(-20, 0))
+//                //.splineToConstantHeading(new Vector2d(5, -40), Math.toRadians(0))
+//                //.splineToLinearHeading(new Pose2d(5, -60, Math.toRadians(0)), Math.toRadians(180))
+//                .build();
+
+//        drive.followTrajectory(trajectory);
+//        drive.followTrajectory(drive.trajectoryBuilder(trajectory.end())
+//                //.back(20)
+//                .strafeLeft(20)
+//                //.lineToConstantHeading(new Vector2d(-20, 0))
+//                //.splineToConstantHeading(new Vector2d(5, -40), Math.toRadians(0))
+//                //.splineToLinearHeading(new Pose2d(5, -60, Math.toRadians(0)), Math.toRadians(180))
+//                .build());
+//        sleep(5000);
+
+        /*Pose2d endPosition = driveToZone(drive, initialPosition, targetZone, 7);
 
         appendages.setGoalLifterPosition(BotAppendages.GoalLifterPosition.DOWN);
         sleep(1000);
         appendages.openGoalGrabber(true);
         sleep(1000);
 
-        appendages.setRingLifterPosition(BotAppendages.RingLifterPosition.UP);
         appendages.enableShooterWheel(true);
 
         appendages.setGoalLifterPosition(BotAppendages.GoalLifterPosition.UP);
-        appendages.setCameraPosition(BotAppendages.CameraPosition.TOWARDS_GOAL);
 
         Trajectory driveToShootingLocation = drive.trajectoryBuilder(endPosition, false)
                 .splineToLinearHeading(new Pose2d(-15, alliance == Alliance.RED ? -31 : 31, Math.toRadians(0)), Math.toRadians(180))
@@ -101,7 +125,6 @@ public class FullAuto {
             sleep(700);
         }
 
-        appendages.setRingLifterPosition(BotAppendages.RingLifterPosition.DOWN);
         appendages.enableShooterWheel(false);
 
         appendages.setGoalLifterPosition(BotAppendages.GoalLifterPosition.DOWN);
@@ -133,20 +156,20 @@ public class FullAuto {
         }
         driveToLineBuilder.splineToConstantHeading(new Vector2d(12, alliance == Alliance.RED ? -40 : 40), Math.toRadians(0));
 
-        drive.followTrajectory(driveToLineBuilder.build());
+        drive.followTrajectory(driveToLineBuilder.build());*/
     }
 
     Pose2d driveToZone(BotMecanumDrive drive, Pose2d startingPosition, TargetZone targetZone, double xOffset) {
-        Trajectory driveToA = drive.trajectoryBuilder(startingPosition, true)
+        Trajectory driveToA = drive.trajectoryBuilder(startingPosition, false)
                 .splineTo(new Vector2d(-2 + xOffset, alliance == Alliance.RED ? -60 : 60), Math.toRadians(0))
                 .build();
 
-        Trajectory driveToB = drive.trajectoryBuilder(startingPosition, true)
+        Trajectory driveToB = drive.trajectoryBuilder(startingPosition, false)
                 .splineTo(new Vector2d(-15, alliance == Alliance.RED ? -50 : 50), Math.toRadians(0))
                 .splineTo(new Vector2d(20 + xOffset, alliance == Alliance.RED ? -37 : 37), Math.toRadians(0))
                 .build();
 
-        Trajectory driveToC = drive.trajectoryBuilder(startingPosition, true)
+        Trajectory driveToC = drive.trajectoryBuilder(startingPosition, false)
                 .splineTo(new Vector2d(-15, alliance == Alliance.RED ? -50 : 50), Math.toRadians(0))
                 .splineTo(new Vector2d(45 + xOffset, (xOffset == -7 ? -65 : -60) * (alliance == Alliance.RED ? 1 : -1)), Math.toRadians(0))
                 .build();

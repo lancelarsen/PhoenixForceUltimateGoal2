@@ -55,7 +55,6 @@ public class TeleOp extends LinearOpMode {
         while (opModeIsActive()) {
             appendages.updateLights();
             appendages.commandIntake();
-            appendages.commandWings();
             appendages.commandShooter();
             appendages.commandGoalGrabber();
 

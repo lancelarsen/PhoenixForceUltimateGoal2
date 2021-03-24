@@ -4,20 +4,11 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
 public class AppendagesAutonomous extends BotAppendages {
-    private HardwareMap hardwareMap;
+    private LinearOpMode opMode;
 
-    public AppendagesAutonomous(HardwareMap hardwareMap) {
-        super(hardwareMap);
-        this.hardwareMap = hardwareMap;
-
-        // Do unsafe wing retract
-        // (set all servos to closed/retracted position, can break servos if wings not in)
-        setInitialLeftWingPos(false);
-        setInitialRightWingPos(false);
-        leftWingOpener.setPosition(CLOSED_LEFT_WING_ANGLE);
-        rightWingOpener.setPosition(CLOSED_RIGHT_WING_ANGLE);
-        leftWingExtender.setPosition(RETRACTED_LEFT_WING_ANGLE);
-        rightWingExtender.setPosition(RETRACTED_RIGHT_WING_ANGLE);
+    public AppendagesAutonomous(LinearOpMode opMode) {
+        super(opMode.hardwareMap);
+        this.opMode = opMode;
     }
 
     public Thread shootRing() {

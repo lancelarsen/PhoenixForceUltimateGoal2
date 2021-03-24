@@ -14,87 +14,31 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.StartingPosition;
-
-public class RingVision {
+public class RingVisionSingle {
     HardwareMap hardwareMap;
 
     OpenCvCamera webcam;
     RingVisionPipeline pipeline;
 
-    public enum RingCount { FOUR, ONE, ZERO }
+    public enum RingCount {
+        FOUR,
+        ONE,
+        ZERO
+    }
 
-    private static Scalar _blue = new Scalar(0, 0, 255);
-    private static Scalar _green = new Scalar(0, 255, 0);
-    private static Scalar RED = new Scalar(255, 0, 0);
-    private static StartingPosition StartingPosition;
-
-    private int ThresholdRingsFour = 0;
-    private int ThresholdRingsOne = 0;
-    private int BoxHeight = 0;
-    private int BoxWidth = 0;
-    private int BoxX = 0;
-    private int BoxY = 0;
-
-    private Point regionPointA = new Point(0,0);
-    private Point regionPointB = new Point(0,0);
-
-    public RingVision(HardwareMap hardwareMap) {
+    public RingVisionSingle(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
     }
 
-    public void init(StartingPosition startingPosition) {
+    public void init() {
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         webcam = OpenCvCameraFactory.getInstance().createWebcam(hardwareMap.get(WebcamName.class, "Webcam 1"), cameraMonitorViewId);
         pipeline = new RingVisionPipeline();
         webcam.setPipeline(pipeline);
+
         webcam.openCameraDeviceAsync(() ->
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
         );
-
-        StartingPosition = startingPosition;
-
-        //--- Red - Right Starting (Far Right of Line)
-        if (StartingPosition == StartingPosition.RED_RIGHT)
-        {
-            ThresholdRingsFour = 138;
-            ThresholdRingsOne = 130;
-            BoxX = 10;
-            BoxY = 116;
-            BoxWidth = 26;
-            BoxHeight = 20;
-        }
-        //--- Red - Left Starting (Far Left of Line)
-        else if (StartingPosition == StartingPosition.RED_LEFT) {
-            ThresholdRingsFour = 138;
-            ThresholdRingsOne = 130;
-            BoxX = 235;
-            BoxY = 126;
-            BoxWidth = 28;
-            BoxHeight = 20;
-        }
-        //--- Blue - Right Starting (Far Right of Line)
-        else if (StartingPosition == StartingPosition.BLUE_RIGHT) {
-            ThresholdRingsFour = 138;
-            ThresholdRingsOne = 130;
-            BoxX = 10;
-            BoxY = 116;
-            BoxWidth = 26;
-            BoxHeight = 20;
-        }
-        //--- Blue - Left Starting (Center of Line)
-        else if (StartingPosition == StartingPosition.BLUE_LEFT) {
-            ThresholdRingsFour = 138;
-            ThresholdRingsOne = 130;
-            BoxX = 235;
-            BoxY = 126;
-            BoxWidth = 28;
-            BoxHeight = 20;
-        }
-
-        regionPointA = new Point(BoxX, BoxY);
-        regionPointB = new Point(BoxX+BoxWidth,BoxY+BoxHeight);
     }
 
     public void setViewportPaused(boolean paused) {
@@ -114,6 +58,24 @@ public class RingVision {
     }
 
     private class RingVisionPipeline extends OpenCvPipeline {
+        Scalar BLUE = new Scalar(0, 0, 255);
+        Scalar GREEN = new Scalar(0, 255, 0);
+        Scalar RED = new Scalar(255, 0, 0);
+
+        int FOUR_RING_THRESHOLD = 138;
+        int ONE_RING_THRESHOLD = 130;
+
+        //Point regionPointA = new Point(142,106);
+        //Point regionPointB = new Point(170,126);
+
+        //--- Red - Left Starting (Far Left of Line)
+        //Point regionPointA = new Point(235,126);
+        //Point regionPointB = new Point(263,146);
+
+        //--- Red - Right Starting (Far Right of Line) -- change thresholds
+        Point regionPointA = new Point(10,116);
+        Point regionPointB = new Point(36,136);
+
         Mat regionCb;
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();
@@ -144,7 +106,7 @@ public class RingVision {
                     input, // Buffer to draw on
                     regionPointA, // First point which defines the rectangle
                     regionPointB, // Second point which defines the rectangle
-                    _blue, // The color the rectangle is drawn in
+                    BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
 
             // Draw target
@@ -169,9 +131,9 @@ public class RingVision {
             // Draw text
             Scalar displayColor = RED;
             if (pipeline.ringCount == RingCount.FOUR) {
-                displayColor = _green;
+                displayColor = GREEN;
             } else if (pipeline.ringCount == RingCount.ONE) {
-                displayColor = _blue;
+                displayColor = BLUE;
             }
             Imgproc.putText(input, ringCount + " RING(S)", new Point(75, 190), 1, 2, displayColor, 2);
             Imgproc.putText(input, String.valueOf(averageColorLevel), new Point(135, 230), 1, 2, displayColor, 2);
@@ -179,14 +141,15 @@ public class RingVision {
 
         @Override
         public Mat processFrame(Mat input) {
+
             // Calculate color level
             inputToCb(input);
             averageColorLevel = (int) Core.mean(regionCb).val[0];
 
             ringCount = RingCount.FOUR;
-            if (averageColorLevel > ThresholdRingsFour) {
+            if (averageColorLevel > FOUR_RING_THRESHOLD) {
                 ringCount = RingCount.FOUR;
-            } else if (averageColorLevel > ThresholdRingsOne) {
+            } else if (averageColorLevel > ONE_RING_THRESHOLD) {
                 ringCount = RingCount.ONE;
             } else {
                 ringCount = RingCount.ZERO;

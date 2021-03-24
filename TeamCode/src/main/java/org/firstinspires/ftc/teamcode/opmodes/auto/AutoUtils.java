@@ -6,6 +6,13 @@ public class AutoUtils {
         BLUE
     }
 
+    public enum StartingPosition {
+        RED_LEFT,
+        RED_RIGHT,
+        BLUE_LEFT,
+        BLUE_RIGHT
+    }
+
     public static void sleep(long milliseconds) {
         try {
             Thread.sleep(milliseconds);

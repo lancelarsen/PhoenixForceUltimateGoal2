@@ -68,7 +68,7 @@ public class BotMecanumDrive extends MecanumDrive {
     public static double VY_WEIGHT = 1;
     public static double OMEGA_WEIGHT = 1;
 
-    public static int POSE_HISTORY_LIMIT = 100;
+    public static int POSE_HISTORY_LIMIT = -1;
 
     public final static double FAST_SPEED_MULTIPLIER = 1.0;
     public final static double SLOW_SPEED_MULTIPLIER = 0.5;
