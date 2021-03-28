@@ -5,31 +5,21 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.demo;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
-import org.opencv.core.Core;
-import org.opencv.core.Mat;
-import org.opencv.core.Point;
-import org.opencv.core.Rect;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.openftc.easyopencv.OpenCvCamera;
-import org.openftc.easyopencv.OpenCvCameraFactory;
-import org.openftc.easyopencv.OpenCvCameraRotation;
-import org.openftc.easyopencv.OpenCvPipeline;
 
-@SuppressWarnings("SpellCheckingInspection")
-@TeleOp(name = "Ring Count: Red Right", group = "Vision")
-public class VisionRingCountRedRight extends LinearOpMode {
+@Disabled
+@TeleOp(name = "Ring Count: Blue Inside", group = "Vision")
+public class VisionRingCountBlueInside extends LinearOpMode {
     @Override
     public void runOpMode() {
         RingVision ringVision = new RingVision(hardwareMap);
 
-        ringVision.init(AutoUtils.StartingPosition.RED_RIGHT);
+        ringVision.init(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.INSIDE);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();

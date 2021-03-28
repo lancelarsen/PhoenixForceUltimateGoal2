@@ -5,20 +5,21 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.demo;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
-@SuppressWarnings("SpellCheckingInspection")
-@TeleOp(name = "Ring Count: Blue Right", group = "Vision")
-public class VisionRingCountBlueRight extends LinearOpMode {
+@Disabled
+@TeleOp(name = "Ring Count: Blue Outside", group = "Vision")
+public class VisionRingCountBlueOutside extends LinearOpMode {
     @Override
     public void runOpMode() {
         RingVision ringVision = new RingVision(hardwareMap);
 
-        ringVision.init(AutoUtils.StartingPosition.BLUE_RIGHT);
+        ringVision.init(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
 
         telemetry.addLine("Waiting for start");
         telemetry.update();

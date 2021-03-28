@@ -7,10 +7,8 @@ public class AutoUtils {
     }
 
     public enum StartingPosition {
-        RED_LEFT,
-        RED_RIGHT,
-        BLUE_LEFT,
-        BLUE_RIGHT
+        INSIDE,
+        OUTSIDE,
     }
 
     public static void sleep(long milliseconds) {

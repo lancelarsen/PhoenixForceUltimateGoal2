@@ -24,8 +24,8 @@ public class BotAppendages {
     public final static double SHOOTER_TILTER_LOADING_ANGLE = 0.4;
     public final static double EXTENDED_SHOOTER_ARM_ANGLE = 0.5;
     public final static double RETRACTED_SHOOTER_ARM_ANGLE = 0.3;
-    //public final static double RING_SHOOTER_WHEEL_SPEED = 1700;
-    public final static double RING_SHOOTER_WHEEL_SPEED = 0.78;
+    public final static double RING_SHOOTER_WHEEL_SPEED = 500;
+    //public final static double RING_SHOOTER_WHEEL_SPEED = 0.78;
 
     public final static double INTAKE_ROLLER_SPEED = -1.0;
     public final static double INTAKE_ELEVATOR_SPEED = -1.0;
@@ -34,9 +34,9 @@ public class BotAppendages {
     public final static double DOWN_GOAL_LIFTER_POSITION = 0;
     public final static double MIDDLE_GOAL_LIFTER_POSITION = 20;
     public final static double UP_GOAL_LIFTER_POSITION = 40; // In inches
-    public final static double OPEN_GOAL_GRABBER_ANGLE = 0.72;
+    public final static double OPEN_GOAL_GRABBER_ANGLE = 0.6;
     public final static double CLOSED_GOAL_GRABBER_ANGLE = 0.18;
-    public final static double OPEN_GOAL_LOCK_ANGLE = 0.8;
+    public final static double OPEN_GOAL_LOCK_ANGLE = 0.5;
     public final static double CLOSED_GOAL_LOCK_ANGLE = 0;
 
     public final RevBlinkinLedDriver blinkin;
@@ -82,8 +82,7 @@ public class BotAppendages {
         shooterTilter = hardwareMap.get(Servo.class, "shooterTilter");
         shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         shooterWheel = hardwareMap.get(DcMotorEx.class, "shooterWheel");
-        shooterWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         shooterWheel.setDirection(DcMotorSimple.Direction.REVERSE);
 
         ringDetector = hardwareMap.get(ColorSensor.class, "ringDetector");
@@ -184,11 +183,11 @@ public class BotAppendages {
             try {
                 if (open) {
                     goalLock.setPosition(OPEN_GOAL_LOCK_ANGLE);
-                    Thread.sleep(700);
+                    Thread.sleep(100);
                     goalGrabber.setPosition(OPEN_GOAL_GRABBER_ANGLE);
                 } else {
                     goalGrabber.setPosition(CLOSED_GOAL_GRABBER_ANGLE);
-                    Thread.sleep(2200);
+                    Thread.sleep(400);
                     goalLock.setPosition(CLOSED_GOAL_LOCK_ANGLE);
                 }
             } catch (InterruptedException e) {

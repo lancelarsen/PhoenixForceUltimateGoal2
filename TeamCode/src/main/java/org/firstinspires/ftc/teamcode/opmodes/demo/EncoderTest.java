@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.hardware.DcMotorEx;
 import org.firstinspires.ftc.teamcode.drive.BotMecanumDrive;
 import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.Encoder;
 
-@Disabled
+//@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="EncoderTest", group="1")
 public class EncoderTest extends LinearOpMode {
     private Encoder intakeElevator;

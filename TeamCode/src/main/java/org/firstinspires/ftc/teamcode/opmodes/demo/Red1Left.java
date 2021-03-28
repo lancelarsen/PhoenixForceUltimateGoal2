@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
+package org.firstinspires.ftc.teamcode.opmodes.demo;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -15,7 +16,8 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FullAuto;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
-@Autonomous(name = "AAA", group = "Test")
+@Disabled
+@Autonomous(name = "LanceAuto", group = "Test")
 public class Red1Left extends LinearOpMode {
 
     private static LinearOpMode _opMode;

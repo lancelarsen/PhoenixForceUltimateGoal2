@@ -7,14 +7,15 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FullAuto;
 
 @Autonomous(group = "drive")
-public class BlueFullAutoLeft extends LinearOpMode {
+public class BlueFullAutoOutside extends LinearOpMode {
     @Override
     public void runOpMode() {
-        FullAuto.init(this, AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.BLUE_LEFT);
+        FullAuto auto = new FullAuto(this, AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
+        auto.init();
 
         waitForStart();
         if (isStopRequested()) return;
 
-        FullAuto.run();
+        auto.run();
     }
 }

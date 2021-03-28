@@ -12,7 +12,7 @@
 //public class AutoPowerShots {
 //}
 
-package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
+package org.firstinspires.ftc.teamcode.opmodes.demo;
 
         import com.acmerobotics.dashboard.config.Config;
         import com.acmerobotics.roadrunner.geometry.Pose2d;
@@ -32,7 +32,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
  */
 @Config
 @Autonomous(group = "drive")
-public class AutoPowerShots extends LinearOpMode {
+public class CursedAuto extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         BotMecanumDrive drive = new BotMecanumDrive(hardwareMap);
