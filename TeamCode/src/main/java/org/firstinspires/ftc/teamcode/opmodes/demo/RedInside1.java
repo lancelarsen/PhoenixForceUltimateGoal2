@@ -7,6 +7,7 @@ import com.acmerobotics.roadrunner.trajectory.constraints.AngularVelocityConstra
 import com.acmerobotics.roadrunner.trajectory.constraints.MecanumVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.MinVelocityConstraint;
 import com.acmerobotics.roadrunner.trajectory.constraints.ProfileAccelerationConstraint;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -22,7 +23,8 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_ACCEL;
 import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_ANG_VEL;
 
-@TeleOp(name = "AAA Red->Inside 1", group = "Auto")
+@Disabled
+@TeleOp(name = "DEMO Red->Inside 1", group = "zzz")
 public class RedInside1 extends LinearOpMode {
 
     private static LinearOpMode _opMode;
@@ -121,7 +123,7 @@ public class RedInside1 extends LinearOpMode {
                 break;
         }
 
-        _drive.turn(Math.toRadians(angle), _maxAngularVelocity, _maxAngularAcceleration);
+        //_drive.turn(Math.toRadians(angle), _maxAngularVelocity, _maxAngularAcceleration);
         _poseLast = _poseLast.plus(new Pose2d(0, 0, Math.toRadians(angle)));
     }
 
@@ -210,11 +212,11 @@ public class RedInside1 extends LinearOpMode {
         //----------------------------------------------------------------------
         //--- power shots
         //----------------------------------------------------------------------
-        DriveStraight(FieldPositions.P4A, Speed.Fast); //--- drive to power shot line
-        sleep(1000);
-        DriveStraight(FieldPositions.P4B, Speed.Fast); //--- strafe
-        sleep(1000);
-        DriveStraight(FieldPositions.P4C, Speed.Fast); //--- strafe
+//        DriveStraight(FieldPositions.P4[0], Speed.Fast); //--- drive to power shot line
+//        sleep(1000);
+//        DriveStraight(FieldPositions.P4[1], Speed.Fast); //--- strafe
+//        sleep(1000);
+//        DriveStraight(FieldPositions.P4[2], Speed.Fast); //--- strafe
 
         //----------------------------------------------------------------------
         //--- collect rings
