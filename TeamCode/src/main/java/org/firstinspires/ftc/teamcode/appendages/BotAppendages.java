@@ -13,6 +13,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.appendages.utils.EncoderUtil;
 import org.firstinspires.ftc.teamcode.appendages.utils.MapUtil;
 
+import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
+
 @Config
 public class BotAppendages {
     public final static double TRIGGER_PRESSED_THRESH = 0.5;
@@ -24,13 +26,17 @@ public class BotAppendages {
     public final static double SHOOTER_TILTER_LOADING_ANGLE = 0.4;
     public final static double EXTENDED_SHOOTER_ARM_ANGLE = 0.5;
     public final static double RETRACTED_SHOOTER_ARM_ANGLE = 0.3;
-    public final static double RING_SHOOTER_WHEEL_SPEED = 500;
-    //public final static double RING_SHOOTER_WHEEL_SPEED = 0.78;
+    public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1700;
+    public final static double RING_SHOOTER_WHEEL_SPEED_POWER_SHOTS = 1500;
+
+    private final static long SHOOTER_ARM_EXTEND_DELAY = 300;
+    private final static long SHOOTER_ARM_RETRACT_DELAY = 300;
 
     public final static double INTAKE_ROLLER_SPEED = -1.0;
     public final static double INTAKE_ELEVATOR_SPEED = -1.0;
+    public final static double INTAKE_CONVEYOR_SPEED = -1.0;
 
-    public final static double GOAL_LIFTER_SPEED = 1;
+    public final static double GOAL_LIFTER_SPEED = 0.9;
     public final static double DOWN_GOAL_LIFTER_POSITION = 0;
     public final static double MIDDLE_GOAL_LIFTER_POSITION = 20;
     public final static double UP_GOAL_LIFTER_POSITION = 40; // In inches
@@ -38,6 +44,10 @@ public class BotAppendages {
     public final static double CLOSED_GOAL_GRABBER_ANGLE = 0.18;
     public final static double OPEN_GOAL_LOCK_ANGLE = 0.5;
     public final static double CLOSED_GOAL_LOCK_ANGLE = 0;
+
+    public final static double RETRACTED_REACH_ARM_ANGLE = 0.2;
+    public final static double SHOOTER_CLEARED_REACH_ARM_ANGLE = 0.5;
+    public final static double EXTENDED_REACH_ARM_ANGLE = 0.8;
 
     public final RevBlinkinLedDriver blinkin;
     public RevBlinkinLedDriver.BlinkinPattern blinkinPattern;
@@ -50,6 +60,7 @@ public class BotAppendages {
 
     public final DcMotor intakeRoller;
     public final DcMotor intakeElevator;
+    public final CRServo intakeConveyor;
 
     public final DcMotorEx goalLifter;
     public final Servo goalGrabber;
@@ -58,11 +69,17 @@ public class BotAppendages {
     private boolean goalGrabberLastOpen = false;
 
     public boolean intakeEnabled;
-    public Direction intakeDirection;
+    public Direction intakeDirection = Direction.FORWARD;
 
     public enum Direction {
         FORWARD,
         REVERSE
+    }
+
+    public enum ShooterSpeed {
+        HIGH_GOAL,
+        POWERSHOTS,
+        OFF
     }
 
     public enum GoalLifterPosition {
@@ -88,9 +105,8 @@ public class BotAppendages {
         ringDetector = hardwareMap.get(ColorSensor.class, "ringDetector");
 
         intakeRoller = hardwareMap.get(DcMotor.class, "intakeRoller");
-        //intakeRoller.setDirection(DcMotorSimple.Direction.REVERSE);
         intakeElevator = hardwareMap.get(DcMotor.class, "intakeElevator");
-        //intakeElevator.setDirection(DcMotorSimple.Direction.REVERSE);
+        intakeConveyor = hardwareMap.get(CRServo.class, "intakeConveyor");
 
         goalLifter = hardwareMap.get(DcMotorEx.class, "goalGrabberLifter");
         goalLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -120,16 +136,34 @@ public class BotAppendages {
         }
     }
 
-    public void enableShooterWheel(boolean enabled) {
-        enableShooterWheel(enabled, RING_SHOOTER_WHEEL_SPEED);
+    public void shooterOff() {
+        setShooterSpeed(ShooterSpeed.OFF);
     }
 
-    public void enableShooterWheel(boolean enabled, double speed) {
-        if (enabled) {
-            shooterWheel.setPower(speed);
-            //shooterWheel.setVelocity(speed);
-        } else {
-            shooterWheel.setVelocity(0);
+    public void setShooterSpeed(ShooterSpeed speed) {
+        switch (speed) {
+            case HIGH_GOAL:
+                shooterWheel.setVelocity(RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL);
+                break;
+            case POWERSHOTS:
+                shooterWheel.setVelocity(RING_SHOOTER_WHEEL_SPEED_POWER_SHOTS);
+                break;
+            case OFF:
+                shooterWheel.setVelocity(0);
+                break;
+        }
+    }
+
+    public void shootRings() {
+        shootRings(3);
+    }
+
+    public void shootRings(int num) {
+        for (int i = 0; i < num; i++) {
+            extendShooterArm(true);
+            sleep(SHOOTER_ARM_EXTEND_DELAY);
+            extendShooterArm(false);
+            sleep(SHOOTER_ARM_RETRACT_DELAY);
         }
     }
 
@@ -145,16 +179,40 @@ public class BotAppendages {
         return
     }*/
 
+    public void ringIntakeStart() {
+        enableIntake(true);
+    }
+
+    public void ringIntakeStop() {
+        enableIntake(false);
+    }
+
     public void enableIntake(boolean enabled) {
         intakeEnabled = enabled;
-
         runIntake();
     }
 
     public void setIntakeDirection(Direction direction) {
         intakeDirection = direction;
-
         runIntake();
+    }
+
+    private void runIntake() {
+        double intakeRollerSpeed = 0;
+        double intakeElevatorSpeed = 0;
+        double intakeConveyorSpeed = 0;
+
+        if (intakeEnabled) {
+            double direction = intakeDirection == Direction.FORWARD ? 1 : -1;
+
+            intakeRollerSpeed = INTAKE_ROLLER_SPEED * direction;
+            intakeElevatorSpeed = INTAKE_ELEVATOR_SPEED * direction;
+            intakeConveyorSpeed = INTAKE_CONVEYOR_SPEED * direction;
+        }
+
+        intakeRoller.setPower(intakeRollerSpeed);
+        intakeElevator.setPower(intakeElevatorSpeed);
+        intakeConveyor.setPower(intakeConveyorSpeed);
     }
 
     public void setGoalLifterPosition(GoalLifterPosition position) {
@@ -197,20 +255,5 @@ public class BotAppendages {
 
         goalLockThread = new Thread(openTask);
         goalLockThread.start();
-    }
-
-    private void runIntake() {
-        double intakeRollerSpeed = 0;
-        double intakeElevatorSpeed = 0;
-
-        if (intakeEnabled) {
-            double direction = intakeDirection == Direction.FORWARD ? 1 : -1;
-
-            intakeRollerSpeed = BotAppendages.INTAKE_ROLLER_SPEED * direction;
-            intakeElevatorSpeed = BotAppendages.INTAKE_ELEVATOR_SPEED * direction;
-        }
-
-        intakeRoller.setPower(intakeRollerSpeed);
-        intakeElevator.setPower(intakeElevatorSpeed);
     }
 }

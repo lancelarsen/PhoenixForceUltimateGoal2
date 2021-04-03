@@ -4,12 +4,9 @@ import com.acmerobotics.roadrunner.util.NanoClock;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 
-import org.apache.commons.math3.geometry.euclidean.twod.Line;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
-
-import java.util.concurrent.TimeUnit;
+import org.firstinspires.ftc.teamcode.opmodes.teleop.util.ButtonToggle;
+import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
 
 public class AppendagesTeleOp extends BotAppendages {
     private LinearOpMode opMode;
@@ -17,26 +14,35 @@ public class AppendagesTeleOp extends BotAppendages {
     private NanoClock nanoClock;
     private double startTime = -1;
 
-    private boolean shooterTogglePrePressed = false;
-    private boolean shooterEnabled = true;
+    private ButtonToggle shooterToggle = new ButtonToggle();
+    private boolean shootingInterruptedforMovement;
+    private Thread shootThread;
+    private GamepadUtils driverGamepad;
 
-    private boolean intakeTogglePrePressed = false;
-    private boolean intakeEnabled = true;
+    private ButtonToggle intakeToggle = new ButtonToggle();
 
-    private boolean adjGoalLifterPrePressed = false;
-    private boolean adjGoalLifterPosition = false;
+    private ButtonToggle goalLifterAdjToggle = new ButtonToggle();
+    private boolean preAdjGoalLifter;
     private GoalLifterPosition goalLifterPosition = GoalLifterPosition.DOWN;
     private boolean goalGrabberOpen = true;
+
+    private final Runnable shootTask = () -> {
+        while (opMode.opModeIsActive()) {
+            shootRings(1);
+        }
+    };
 
     public AppendagesTeleOp(LinearOpMode opMode) {
         super(opMode.hardwareMap);
         this.opMode = opMode;
 
         nanoClock = NanoClock.system();
+
+        driverGamepad = new GamepadUtils(opMode.gamepad1);
     }
 
     public boolean isAdjGoalLifterPosition() {
-        return adjGoalLifterPosition;
+        return goalLifterAdjToggle.isActive();
     }
 
     public void updateLights() {
@@ -53,70 +59,70 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     public void commandShooter() {
-        extendShooterArm(this.opMode.gamepad2.x);
+        if (opMode.gamepad2.x && !shootingInterruptedforMovement && !driverGamepad.areJoysticksActive() && !driverGamepad.isDpadActive()) {
+            if (shootThread == null || !shootThread.isAlive()) {
+                shootThread = new Thread(shootTask);
+                shootThread.start();
+            }
+        } else {
+            if (shootThread != null) shootThread.interrupt();
+            extendShooterArm(false);
 
-        if (this.opMode.gamepad2.y && !shooterTogglePrePressed) {
-            shooterEnabled = !shooterEnabled;
-            shooterTogglePrePressed = true;
-        }
-        if (!this.opMode.gamepad2.y) {
-            shooterTogglePrePressed = false;
+            if (driverGamepad.areJoysticksActive() || driverGamepad.isDpadActive()) {
+                shootingInterruptedforMovement = true;
+            }
+
+            if (!opMode.gamepad2.x) {
+                shootingInterruptedforMovement = false;
+            }
         }
 
-        setShooterTilterAngle(shooterEnabled ? ShooterAngle.SHOOTING : ShooterAngle.LOADING);
-        enableShooterWheel(shooterEnabled);
+        shooterToggle.update(opMode.gamepad2.y);
+
+        setShooterTilterAngle(shooterToggle.isActive() ? ShooterAngle.SHOOTING : ShooterAngle.LOADING);
+        setShooterSpeed(shooterToggle.isActive() ? ShooterSpeed.HIGH_GOAL : ShooterSpeed.OFF);
     }
 
     public void commandIntake() {
-        setIntakeDirection(this.opMode.gamepad2.a ? Direction.REVERSE : Direction.FORWARD);
+        setIntakeDirection(opMode.gamepad2.a ? Direction.REVERSE : Direction.FORWARD);
 
-        if (this.opMode.gamepad2.b && !intakeTogglePrePressed) {
-            intakeEnabled = !intakeEnabled;
-            intakeTogglePrePressed = true;
-        }
-        if (!this.opMode.gamepad2.b) {
-            intakeTogglePrePressed = false;
-        }
-
-        enableIntake(intakeEnabled);
+        intakeToggle.update(opMode.gamepad2.b);
+        enableIntake(intakeToggle.isActive());
     }
 
     public void commandGoalGrabber() {
-        if (this.opMode.gamepad1.right_stick_button && !adjGoalLifterPrePressed) {
-            adjGoalLifterPosition = !adjGoalLifterPosition;
-            adjGoalLifterPrePressed = true;
-
-            if (adjGoalLifterPosition) {
+        goalLifterAdjToggle.update(opMode.gamepad1.right_stick_button);
+        if (goalLifterAdjToggle.isActive() != preAdjGoalLifter) {
+            if (goalLifterAdjToggle.isActive()) {
                 goalLifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
             } else {
                 goalLifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 goalLifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
-        } else if (!this.opMode.gamepad1.right_stick_button) {
-            adjGoalLifterPrePressed = false;
         }
+        preAdjGoalLifter = goalLifterAdjToggle.isActive();
 
-        if (adjGoalLifterPosition) {
+        if (goalLifterAdjToggle.isActive()) {
             // Not sure why we need *-1, as we have motor reversed in HW class
-            double rightStickY = this.opMode.gamepad1.right_stick_y * -1 * 0.5;
+            double rightStickY = opMode.gamepad1.right_stick_y * -1 * 0.5;
             if (Math.abs(rightStickY) < JOYSTICK_DEAD_ZONE) {
                 rightStickY = 0;
             }
 
             goalLifter.setPower(rightStickY);
         } else {
-            if (this.opMode.gamepad1.left_trigger > TRIGGER_PRESSED_THRESH) {
+            if (opMode.gamepad1.left_trigger > TRIGGER_PRESSED_THRESH) {
                 goalLifterPosition = GoalLifterPosition.UP;
-            } else if (this.opMode.gamepad1.right_trigger > TRIGGER_PRESSED_THRESH) {
+            } else if (opMode.gamepad1.right_trigger > TRIGGER_PRESSED_THRESH) {
                 goalLifterPosition = GoalLifterPosition.DOWN;
             }
 
             setGoalLifterPosition(goalLifterPosition);
         }
 
-        if (this.opMode.gamepad1.left_bumper) {
+        if (opMode.gamepad1.left_bumper) {
             goalGrabberOpen = false;
-        } else if (this.opMode.gamepad1.right_bumper) {
+        } else if (opMode.gamepad1.right_bumper) {
             goalGrabberOpen = true;
         }
 

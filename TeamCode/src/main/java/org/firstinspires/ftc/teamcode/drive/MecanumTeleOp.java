@@ -5,8 +5,19 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
+import org.firstinspires.ftc.teamcode.appendages.AppendagesTeleOp;
+import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
+import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
+import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
+
+import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
+
 public class MecanumTeleOp extends BotMecanumDrive {
     private LinearOpMode opMode;
+
+    private GamepadUtils driverGamepad;
 
     private double speedMultiplier = FAST_SPEED_MULTIPLIER;
     private boolean turningEnabled = false;
@@ -14,6 +25,8 @@ public class MecanumTeleOp extends BotMecanumDrive {
     public MecanumTeleOp(LinearOpMode opMode) {
         super(opMode.hardwareMap);
         this.opMode = opMode;
+
+        driverGamepad = new GamepadUtils(opMode.gamepad1);
 
         setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
@@ -30,7 +43,7 @@ public class MecanumTeleOp extends BotMecanumDrive {
         }
 
         Pose2d drivePower = new Pose2d();
-        if (dpadPressed()) {
+        if (driverGamepad.isDpadActive()) {
             Gamepad gamepad = opMode.gamepad1;
 
             if (gamepad.dpad_up) {
@@ -54,11 +67,5 @@ public class MecanumTeleOp extends BotMecanumDrive {
 
         setWeightedDrivePower(drivePower);
         update();
-    }
-
-    private boolean dpadPressed()  {
-        Gamepad gamepad = opMode.gamepad1;
-
-        return gamepad.dpad_up || gamepad.dpad_down || gamepad.dpad_left || gamepad.dpad_right;
     }
 }

@@ -15,8 +15,6 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
-import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.telemetry;
-
 public class RingVision {
     HardwareMap hardwareMap;
 
@@ -25,21 +23,21 @@ public class RingVision {
 
     public enum RingCount { FOUR, ONE, ZERO }
 
-    private static Scalar _blue = new Scalar(0, 0, 255);
-    private static Scalar _green = new Scalar(0, 255, 0);
-    private static Scalar _red = new Scalar(255, 0, 0);
-    private static AutoUtils.Alliance _alliance;
-    private static AutoUtils.StartingPosition _startingPosition;
+    public enum TargetZone { ZONE_A, ZONE_B, ZONE_C }
 
-    private int _thresholdRingsFour = 0;
-    private int _thresholdRingsOne = 0;
-    private int _boxHeight = 0;
-    private int _boxWidth = 0;
-    private int _boxX = 0;
-    private int _boxY = 0;
+    private static final Scalar BLUE = new Scalar(0, 0, 255);
+    private static final Scalar GREEN = new Scalar(0, 255, 0);
+    private static final Scalar RED = new Scalar(255, 0, 0);
 
-    private Point _regionTopLeft = new Point(0,0);
-    private Point _regionBottomRight = new Point(0,0);
+    private int thresholdRingsFour = 0;
+    private int thresholdRingsOne = 0;
+    private int boxHeight = 0;
+    private int boxWidth = 0;
+    private int boxX = 0;
+    private int boxY = 0;
+
+    private Point regionTopLeft = new Point(0,0);
+    private Point regionBottomRight = new Point(0,0);
 
     public RingVision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -54,47 +52,47 @@ public class RingVision {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
         );
 
-        _startingPosition = startingPosition;
-
         //--- Red - Right Starting (Far Right of Line)
-        if (_alliance == AutoUtils.Alliance.RED && _startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
-            _thresholdRingsFour = 138;
-            _thresholdRingsOne = 130;
-            _boxX = 10;
-            _boxY = 116;
-            _boxWidth = 26;
-            _boxHeight = 20;
+        if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
+            thresholdRingsFour = 138;
+            thresholdRingsOne = 130;
+            boxX = 10;
+            boxY = 116;
+            boxWidth = 26;
+            boxHeight = 20;
         }
         //--- Red - Left Starting (Far Left of Line)
-        else if (_alliance == AutoUtils.Alliance.RED && _startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            _thresholdRingsFour = 138;
-            _thresholdRingsOne = 130;
-            _boxX = 235;
-            _boxY = 126;
-            _boxWidth = 28;
-            _boxHeight = 20;
+        else if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.INSIDE) {
+            thresholdRingsFour = 138;
+            thresholdRingsOne = 130;
+            boxX = 235;
+            boxY = 126;
+            boxWidth = 28;
+            boxHeight = 20;
         }
         //--- Blue - Right Starting (Far Right of Line)
-        else if (_alliance == AutoUtils.Alliance.BLUE && _startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            _thresholdRingsFour = 138;
-            _thresholdRingsOne = 130;
-            _boxX = 10;
-            _boxY = 116;
-            _boxWidth = 26;
-            _boxHeight = 20;
+        else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.INSIDE) {
+            thresholdRingsFour = 138;
+            thresholdRingsOne = 130;
+            boxX = 10;
+            boxY = 116;
+            boxWidth = 26;
+            boxHeight = 20;
         }
         //--- Blue - Left Starting (Center of Line)
-        else if (_alliance == AutoUtils.Alliance.BLUE && _startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
-            _thresholdRingsFour = 138;
-            _thresholdRingsOne = 130;
-            _boxX = 235;
-            _boxY = 126;
-            _boxWidth = 28;
-            _boxHeight = 20;
+        else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
+            thresholdRingsFour = 138;
+            thresholdRingsOne = 130;
+            boxX = 235;
+            boxY = 126;
+            boxWidth = 28;
+            boxHeight = 20;
         }
 
-        _regionTopLeft = new Point(_boxX, _boxY);
-        _regionBottomRight = new Point(_boxX+_boxWidth,_boxY+_boxHeight);
+        regionTopLeft = new Point(boxX, boxY);
+        regionBottomRight = new Point(boxX + boxWidth, boxY + boxHeight);
+
+        setViewportPaused(false);
     }
 
     public void setViewportPaused(boolean paused) {
@@ -111,6 +109,17 @@ public class RingVision {
 
     public RingCount getRingCount() {
         return pipeline.ringCount;
+    }
+
+    public TargetZone getTargetZone() {
+        switch (getRingCount()) {
+            case ONE:
+                return TargetZone.ZONE_B;
+            case FOUR:
+                return TargetZone.ZONE_C;
+            default:
+                return TargetZone.ZONE_A;
+        }
     }
 
     private class RingVisionPipeline extends OpenCvPipeline {
@@ -134,7 +143,7 @@ public class RingVision {
         @Override
         public void init(Mat input) {
             inputToCb(input);
-            regionCb = Cb.submat(new Rect(_regionTopLeft, _regionBottomRight));
+            regionCb = Cb.submat(new Rect(regionTopLeft, regionBottomRight));
         }
 
         void drawDetectionPreview(Mat input) {
@@ -142,36 +151,36 @@ public class RingVision {
             // Draw box
             Imgproc.rectangle(
                     input, // Buffer to draw on
-                    _regionTopLeft, // First point which defines the rectangle
-                    _regionBottomRight, // Second point which defines the rectangle
-                    _blue, // The color the rectangle is drawn in
+                    regionTopLeft, // First point which defines the rectangle
+                    regionBottomRight, // Second point which defines the rectangle
+                    BLUE, // The color the rectangle is drawn in
                     2); // Thickness of the rectangle lines
 
             // Draw target
             int lineLength = 50;
             Imgproc.line(input,
-                    new Point(_regionTopLeft.x + Math.round((_regionBottomRight.x - _regionTopLeft.x) / 2), _regionTopLeft.y - lineLength + 2),
-                    new Point(_regionTopLeft.x + Math.round((_regionBottomRight.x - _regionTopLeft.x) / 2),_regionTopLeft.y - 2),
-                    _red, 2);
+                    new Point(regionTopLeft.x + Math.round((regionBottomRight.x - regionTopLeft.x) / 2), regionTopLeft.y - lineLength + 2),
+                    new Point(regionTopLeft.x + Math.round((regionBottomRight.x - regionTopLeft.x) / 2), regionTopLeft.y - 2),
+                    RED, 2);
             Imgproc.line(input,
-                    new Point(_regionTopLeft.x + Math.round((_regionBottomRight.x - _regionTopLeft.x) / 2), _regionBottomRight.y + lineLength + 2),
-                    new Point(_regionTopLeft.x + Math.round((_regionBottomRight.x - _regionTopLeft.x) / 2),_regionBottomRight.y + 2),
-                    _red, 2);
+                    new Point(regionTopLeft.x + Math.round((regionBottomRight.x - regionTopLeft.x) / 2), regionBottomRight.y + lineLength + 2),
+                    new Point(regionTopLeft.x + Math.round((regionBottomRight.x - regionTopLeft.x) / 2), regionBottomRight.y + 2),
+                    RED, 2);
             Imgproc.line(input,
-                    new Point(_regionTopLeft.x - lineLength + 2, _regionTopLeft.y + Math.round((_regionBottomRight.y - _regionTopLeft.y) / 2)),
-                    new Point(_regionTopLeft.x - 2, _regionTopLeft.y + Math.round((_regionBottomRight.y - _regionTopLeft.y) / 2)),
-                    _red, 2);
+                    new Point(regionTopLeft.x - lineLength + 2, regionTopLeft.y + Math.round((regionBottomRight.y - regionTopLeft.y) / 2)),
+                    new Point(regionTopLeft.x - 2, regionTopLeft.y + Math.round((regionBottomRight.y - regionTopLeft.y) / 2)),
+                    RED, 2);
             Imgproc.line(input,
-                    new Point(_regionBottomRight.x + lineLength + 2, _regionTopLeft.y + Math.round((_regionBottomRight.y - _regionTopLeft.y) / 2)),
-                    new Point(_regionBottomRight.x + 2, _regionTopLeft.y + Math.round((_regionBottomRight.y - _regionTopLeft.y) / 2)),
-                    _red, 2);
+                    new Point(regionBottomRight.x + lineLength + 2, regionTopLeft.y + Math.round((regionBottomRight.y - regionTopLeft.y) / 2)),
+                    new Point(regionBottomRight.x + 2, regionTopLeft.y + Math.round((regionBottomRight.y - regionTopLeft.y) / 2)),
+                    RED, 2);
 
             // Draw text
-            Scalar displayColor = _red;
+            Scalar displayColor = RED;
             if (pipeline.ringCount == RingCount.FOUR) {
-                displayColor = _green;
+                displayColor = GREEN;
             } else if (pipeline.ringCount == RingCount.ONE) {
-                displayColor = _blue;
+                displayColor = BLUE;
             }
             Imgproc.putText(input, ringCount + " RING(S)", new Point(75, 190), 1, 2, displayColor, 2);
             Imgproc.putText(input, String.valueOf(averageColorLevel), new Point(135, 230), 1, 2, displayColor, 2);
@@ -184,9 +193,9 @@ public class RingVision {
             averageColorLevel = (int) Core.mean(regionCb).val[0];
 
             ringCount = RingCount.FOUR;
-            if (averageColorLevel > _thresholdRingsFour) {
+            if (averageColorLevel > thresholdRingsFour) {
                 ringCount = RingCount.FOUR;
-            } else if (averageColorLevel > _thresholdRingsOne) {
+            } else if (averageColorLevel > thresholdRingsOne) {
                 ringCount = RingCount.ONE;
             } else {
                 ringCount = RingCount.ZERO;

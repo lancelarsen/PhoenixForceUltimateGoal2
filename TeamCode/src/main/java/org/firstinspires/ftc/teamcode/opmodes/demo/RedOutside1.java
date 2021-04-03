@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 
-@TeleOp(name = "AAA Red->Outside 1", group = "Auto")
+@TeleOp(name = "DEMO Red->Outside 1", group = "Auto")
 public class RedOutside1 extends LinearOpMode {
 
     private static LinearOpMode _opMode;
@@ -48,7 +48,7 @@ public class RedOutside1 extends LinearOpMode {
             case Slow: break;
         }
 
-        _drive.turn(Math.toRadians(angle));
+        //_drive.turn(Math.toRadians(angle));
         _poseLast = _poseLast.plus(new Pose2d(0, 0, Math.toRadians(angle)));
     }
 

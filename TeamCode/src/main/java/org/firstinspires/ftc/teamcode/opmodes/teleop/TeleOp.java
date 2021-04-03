@@ -1,10 +1,17 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.Gamepad;
 
+import org.apache.commons.math3.geometry.euclidean.twod.Line;
 import org.firstinspires.ftc.teamcode.appendages.AppendagesTeleOp;
+import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
+import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.drive.MecanumTeleOp;
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
+import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
+import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
 
 //----------------------------------------------------------------------
 // Gamepad 1
@@ -18,7 +25,7 @@ import org.firstinspires.ftc.teamcode.drive.MecanumTeleOp;
 //  - Left Trigger          - Goal Lifter Up
 //  - Right Bumper          - Goal Grabber Closed
 //  - Right Trigger         - Goal Lifter Down
-//  - X                     -
+//  - X                     - Auto Shoot Powershots
 //  - Y                     - Speed Fast
 //  - B                     - Speed Slow
 //  - A                     -
@@ -40,29 +47,105 @@ import org.firstinspires.ftc.teamcode.drive.MecanumTeleOp;
 //  - A                     - Reverse Ring Intake Direction (While Pressed)
 //----------------------------------------------------------------------
 
-@com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="TeleOp", group="1")
-public class TeleOp extends LinearOpMode {
+public class TeleOp {
+    LinearOpMode opMode;
+    AutoUtils.Alliance alliance;
 
-    @Override
-    public void runOpMode() {
-        MecanumTeleOp mecanum = new MecanumTeleOp(this);
-        AppendagesTeleOp appendages = new AppendagesTeleOp(this);
+    AppendagesTeleOp appendages;
+    MecanumTeleOp mecanumTeleOp;
+    MecanumAutonomous mecanumAutonomous;
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+    GamepadUtils driverGamepad;
+    Thread shootThread;
 
-        waitForStart();
-        while (opModeIsActive()) {
-            appendages.updateLights();
-            appendages.commandIntake();
-            appendages.commandShooter();
-            appendages.commandGoalGrabber();
+    final static Pose2d BLUE_SIDE_INIT_POWERSHOT_POSE = new Pose2d(10, -61, Math.toRadians(0));
+    final static Pose2d BLUE_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, 11, Math.toRadians(0));
+    final static Pose2d RED_SIDE_INIT_POWERSHOT_POSE = new Pose2d(10, -61, Math.toRadians(0));
+    final static Pose2d RED_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, -11, Math.toRadians(0));
 
-            mecanum.enableTurning(!appendages.isAdjGoalLifterPosition());
-            mecanum.arcadeDrive();
+    final static long AUTO_POWERSHOT_SHOOT_DELAY = 1000;
+    final static long AUTO_POWERSHOT_MOVE_DELAY = 1000;
 
-            telemetry.addData("Status", "Running");
-            //telemetry.update();
+    public TeleOp(LinearOpMode opMode, AutoUtils.Alliance alliance) {
+        this.opMode = opMode;
+        this.alliance = alliance;
+
+        appendages = new AppendagesTeleOp(opMode);
+
+        mecanumTeleOp = new MecanumTeleOp(opMode);
+        mecanumAutonomous = new MecanumAutonomous(opMode);
+
+        driverGamepad = new GamepadUtils(opMode.gamepad1);
+    }
+
+    public void run() {
+        appendages.updateLights();
+        appendages.commandIntake();
+        appendages.commandShooter();
+        appendages.commandGoalGrabber();
+
+        commandPowershotShooting();
+
+        mecanumTeleOp.enableTurning(!appendages.isAdjGoalLifterPosition());
+        mecanumTeleOp.arcadeDrive();
+    }
+
+    private void commandPowershotShooting() {
+        if (opMode.gamepad2.left_bumper) {
+            switch (alliance) {
+                case BLUE:
+                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
+                    break;
+                case RED:
+                    shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+                    break;
+            }
+        } else if (opMode.gamepad2.dpad_up) {
+            switch (alliance) {
+                case BLUE:
+                    mecanumAutonomous.setCurrentPosition(BLUE_FRONT_INIT_POWERSHOT_POSE);
+                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
+                    break;
+                case RED:
+                    mecanumAutonomous.setCurrentPosition(RED_FRONT_INIT_POWERSHOT_POSE);
+                    shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+                    break;
+            }
+        } else if (opMode.gamepad2.dpad_left && alliance == AutoUtils.Alliance.BLUE) {
+            mecanumAutonomous.setCurrentPosition(BLUE_SIDE_INIT_POWERSHOT_POSE);
+            shootPowershots(FieldPositions.P2, FieldPositions.P2A);
+        } else if (opMode.gamepad2.dpad_right && alliance == AutoUtils.Alliance.RED) {
+            mecanumAutonomous.setCurrentPosition(RED_SIDE_INIT_POWERSHOT_POSE);
+            shootPowershots(FieldPositions.P4, FieldPositions.P4A);
         }
+    }
+
+    private void shootPowershots(Pose2d shootingPose, double turnAngles[]) {
+        Runnable shootTask = () -> {
+            appendages.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
+            mecanumAutonomous.line(shootingPose);
+            opMode.sleep(500);
+            for (int i = 0; i < 3; i++) {
+                //appendages.shootRings(1);
+
+                opMode.sleep(AUTO_POWERSHOT_SHOOT_DELAY);
+
+                if (i == 2) break;
+
+                mecanumAutonomous.turnLeft(turnAngles[i]);
+                opMode.sleep(AUTO_POWERSHOT_MOVE_DELAY);
+            }
+        };
+
+        shootThread = new Thread(shootTask);
+        shootThread.start();
+
+        while (shootThread.isAlive()) {
+            if (driverGamepad.areJoysticksActive() || driverGamepad.isDpadActive() || !opMode.opModeIsActive()) {
+                shootThread.interrupt();
+            }
+        }
+
+        appendages.shooterOff();
     }
 }

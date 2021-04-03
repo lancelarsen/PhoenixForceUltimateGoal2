@@ -1,9 +1,6 @@
-package org.firstinspires.ftc.teamcode.opmodes.auto;
+/*package org.firstinspires.ftc.teamcode.opmodes.auto;
 
 import com.acmerobotics.roadrunner.geometry.Pose2d;
-import com.acmerobotics.roadrunner.geometry.Vector2d;
-import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.acmerobotics.roadrunner.trajectory.TrajectoryBuilder;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
@@ -12,25 +9,22 @@ import org.firstinspires.ftc.teamcode.drive.MecanumAuto;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 import static org.firstinspires.ftc.teamcode.drive.MecanumAuto.Speed.FAST;
+import static org.firstinspires.ftc.teamcode.drive.MecanumAuto.Speed.MEDIUM;
+import static org.firstinspires.ftc.teamcode.drive.MecanumAuto.Speed.SLOW;
 import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.Alliance;
+import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.StartingPosition;
 import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 
 public class FullAuto {
-    private enum TargetZone {
-        ZONE_A,
-        ZONE_B,
-        ZONE_C,
-    }
-
     private LinearOpMode opMode;
-    private AutoUtils.StartingPosition startingPosition;
+    private StartingPosition startingPosition;
     private Alliance alliance;
 
     private MecanumAuto drive;
     private AppendagesAutonomous appendages;
     private RingVision ringVision;
 
-    public FullAuto(LinearOpMode opMode, Alliance alliance, AutoUtils.StartingPosition startingPosition) {
+    public FullAuto(LinearOpMode opMode, Alliance alliance, StartingPosition startingPosition) {
         this.opMode = opMode;
         this.alliance = alliance;
         this.startingPosition = startingPosition;
@@ -51,23 +45,41 @@ public class FullAuto {
     }
 
     public void run() {
-        RingVision.RingCount ringCount = ringVision.getRingCount();
+        RingVision.TargetZone targetZone = ringVision.getTargetZone();
         ringVision.setViewportPaused(true);
 
-        TargetZone targetZone = TargetZone.ZONE_C;
-        switch (ringCount) {
-            case ZERO:
-                targetZone = TargetZone.ZONE_A; break;
-            case ONE:
-                targetZone = TargetZone.ZONE_B; break;
+        MecanumAuto.Builder builder;
+        Pose2d startingPose;
+        if (alliance == Alliance.BLUE) {
+            if (startingPosition == StartingPosition.OUTSIDE) {
+                startingPose = FieldPositions.S4;
+            } else {
+                startingPose = FieldPositions.S3;
+            }
+        } else {
+            if (startingPosition == StartingPosition.OUTSIDE) {
+                startingPose = FieldPositions.S2;
+            } else {
+                startingPose = FieldPositions.S1;
+            }
         }
 
         opMode.telemetry.addData("Target zone", targetZone);
         opMode.telemetry.update();
 
-        drive.builder(FAST)
-                .spline(FieldPositions.RED_OUTSIDE_GRAB_GOAL, 0)
-                .follow();
+        Pose2d grabFirstGoalPose = startingPose.plus(new Pose2d(2, 0));
+
+        builder = drive.builder(FAST);
+        if (startingPose == FieldPositions.S1) {
+            builder.spline(FieldPositions.S1W, 0);
+        } else if (startingPose == FieldPositions.S2) {
+            builder.spline(FieldPositions.S2W, 0);
+        } else if (startingPose == FieldPositions.S3) {
+            builder.spline(FieldPositions.S3W, 0);
+        } else if (startingPose == FieldPositions.S4) {
+            builder.spline(FieldPositions.S4W, 0);
+        }
+        builder.follow();
 
         appendages.openGoalGrabber(false);
         sleep(1000);
@@ -105,16 +117,16 @@ public class FullAuto {
         appendages.setGoalLifterPosition(BotAppendages.GoalLifterPosition.MIDDLE);
         appendages.openGoalGrabber(false);
 
-        /*TrajectoryBuilder driveToLineBuilder = drive.trajectoryBuilder(endPosition, false);
+        TrajectoryBuilder driveToLineBuilder = drive.trajectoryBuilder(endPosition, false);
         if (targetZone == TargetZone.ZONE_A) {
             driveToLineBuilder.splineToConstantHeading(new Vector2d(-8, alliance == Alliance.RED ? -50 : 50), Math.toRadians(90));
         }
         driveToLineBuilder.splineToConstantHeading(new Vector2d(12, alliance == Alliance.RED ? -40 : 40), Math.toRadians(0));
 
-        drive.followTrajectory(driveToLineBuilder.build());*/
+        drive.followTrajectory(driveToLineBuilder.build());
     }
 
-    void driveToZone(TargetZone targetZone, double xOffset) {
+    void driveToZone(RingVision.TargetZone targetZone, double xOffset) {
         Pose2d offset = new Pose2d(xOffset, 0, 0);
 
         switch(targetZone) {
@@ -137,4 +149,4 @@ public class FullAuto {
                 break;
         }
     }
-}
+}*/

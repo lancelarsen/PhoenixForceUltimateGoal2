@@ -1,0 +1,21 @@
+package org.firstinspires.ftc.teamcode.opmodes.teleop.util;
+
+public class ButtonToggle {
+    private boolean active;
+    private boolean prePressed;
+
+    public boolean update(boolean currentlyPressed) {
+        if (currentlyPressed && !prePressed) {
+            prePressed = true;
+            active = !active;
+        } else if (!currentlyPressed) {
+            prePressed = false;
+        }
+
+        return isActive();
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+}

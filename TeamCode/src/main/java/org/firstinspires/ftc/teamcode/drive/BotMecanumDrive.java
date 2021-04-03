@@ -35,7 +35,6 @@ import com.qualcomm.robotcore.hardware.VoltageSensor;
 import com.qualcomm.robotcore.hardware.configuration.typecontainers.MotorConfigurationType;
 
 import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.DashboardUtil;
-import org.firstinspires.ftc.teamcode.drive.roadrunnerUtils.LynxModuleUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -174,7 +173,7 @@ public class BotMecanumDrive extends MecanumDrive {
         rightRear.setDirection(DcMotor.Direction.FORWARD);
 
         // TODO: if desired, use setLocalizer() to change the localization method
-        setLocalizer(new StandardTrackingWheelLocalizer(hardwareMap));
+        setLocalizer(new TrackingWheelLocalizer(hardwareMap));
     }
 
     public TrajectoryBuilder trajectoryBuilder(Pose2d startPose) {
@@ -189,7 +188,7 @@ public class BotMecanumDrive extends MecanumDrive {
         return new TrajectoryBuilder(startPose, startHeading, velConstraint, accelConstraint);
     }
 
-    public void turnAsync(double angle) {
+    public void turnAsync(double angle, double maxAngularVelocity, double maxAngularAcceleration) {
         double heading = getPoseEstimate().getHeading();
 
         lastPoseOnTurn = getPoseEstimate();
@@ -197,18 +196,27 @@ public class BotMecanumDrive extends MecanumDrive {
         turnProfile = MotionProfileGenerator.generateSimpleMotionProfile(
                 new MotionState(heading, 0, 0, 0),
                 new MotionState(heading + angle, 0, 0, 0),
-                MAX_ANG_VEL,
-                MAX_ANG_ACCEL
+                maxAngularVelocity,
+                maxAngularAcceleration
         );
 
         turnStart = clock.seconds();
         mode = Mode.TURN;
     }
 
-    public void turn(double angle) {
+    public void turnAsync(double angle) {
+        turnAsync(angle, MAX_ANG_VEL, MAX_ANG_ACCEL);
+    }
+
+    /*public void turn(double angle) {
         turnAsync(angle);
         waitForIdle();
     }
+
+    public void turn(double angle, double maxAngularVelocity, double maxAngularAcceleration) {
+        turnAsync(angle, maxAngularVelocity, maxAngularAcceleration);
+        waitForIdle();
+    }*/
 
     public void followTrajectoryAsync(Trajectory trajectory) {
         follower.followTrajectory(trajectory);

@@ -26,7 +26,7 @@ import java.util.List;
  *
  */
 @Config
-public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
+public class TrackingWheelLocalizer extends ThreeTrackingWheelLocalizer {
     //--- Rev through bore encoder -- https://www.revrobotics.com/rev-11-1271/
     public static double TICKS_PER_REV = 8192;
     public static double WHEEL_RADIUS = 0.7874; // in (2cm radius)
@@ -43,7 +43,7 @@ public class StandardTrackingWheelLocalizer extends ThreeTrackingWheelLocalizer 
 
     private Encoder leftEncoder, rightEncoder, frontEncoder;
 
-    public StandardTrackingWheelLocalizer(HardwareMap hardwareMap) {
+    public TrackingWheelLocalizer(HardwareMap hardwareMap) {
         super(Arrays.asList(
                 new Pose2d(0, LATERAL_DISTANCE / 2, 0), // left
                 new Pose2d(0, -LATERAL_DISTANCE / 2, 0), // right

@@ -62,7 +62,7 @@ public class CursedAuto extends LinearOpMode {
 
 
         //appendages.enableShooterWheel(true);
-        appendages.enableShooterWheel(true, 0.68);
+        //appendages.enableShooterWheel(true, 0.68);
 
 //        Trajectory trajectory = drive.trajectoryBuilder(new Pose2d())
 //                .strafeLeft(0)
