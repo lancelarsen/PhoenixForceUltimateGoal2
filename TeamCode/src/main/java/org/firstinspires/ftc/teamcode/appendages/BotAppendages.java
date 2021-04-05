@@ -7,11 +7,15 @@ import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
+import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.teamcode.appendages.utils.EncoderUtil;
 import org.firstinspires.ftc.teamcode.appendages.utils.MapUtil;
+import org.firstinspires.ftc.teamcode.appendages.utils.MovingAverage;
 
 import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 
@@ -31,6 +35,8 @@ public class BotAppendages {
 
     private final static long SHOOTER_ARM_EXTEND_DELAY = 300;
     private final static long SHOOTER_ARM_RETRACT_DELAY = 300;
+
+    private final static double ELEVATOR_NO_RING_DISTANCE_THRESH = 4.0;
 
     public final static double INTAKE_ROLLER_SPEED = -1.0;
     public final static double INTAKE_ELEVATOR_SPEED = -1.0;
@@ -55,12 +61,17 @@ public class BotAppendages {
     public final Servo shooterTilter;
     public final Servo shooterArm;
     public final DcMotorEx shooterWheel;
+    public ShooterSpeed preShooterSpeed = ShooterSpeed.OFF;
 
-    public final ColorSensor ringDetector;
+    public final NormalizedColorSensor ringDetector;
+    private final MovingAverage ringDistanceMovingAverage = new MovingAverage(3);
 
     public final DcMotor intakeRoller;
     public final DcMotor intakeElevator;
     public final CRServo intakeConveyor;
+    private boolean elevatorEnabled;
+    private boolean intakeEnabled;
+    private Direction intakeDirection = Direction.FORWARD;
 
     public final DcMotorEx goalLifter;
     public final Servo goalGrabber;
@@ -68,8 +79,7 @@ public class BotAppendages {
     private Thread goalLockThread;
     private boolean goalGrabberLastOpen = false;
 
-    public boolean intakeEnabled;
-    public Direction intakeDirection = Direction.FORWARD;
+    public Servo reachArm;
 
     public enum Direction {
         FORWARD,
@@ -82,15 +92,21 @@ public class BotAppendages {
         OFF
     }
 
+    public enum ShooterAngle {
+        SHOOTING,
+        LOADING
+    }
+
     public enum GoalLifterPosition {
         UP,
         MIDDLE,
         DOWN
     }
 
-    public enum ShooterAngle {
-        SHOOTING,
-        LOADING
+    public enum ReachArmPosition {
+        RETRACTED,
+        SHOOTER_CLEARED,
+        EXTENDED
     }
 
     public BotAppendages(HardwareMap hardwareMap) {
@@ -99,10 +115,12 @@ public class BotAppendages {
         shooterTilter = hardwareMap.get(Servo.class, "shooterTilter");
         shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         shooterWheel = hardwareMap.get(DcMotorEx.class, "shooterWheel");
-        shooterWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        shooterWheel.setDirection(DcMotorSimple.Direction.REVERSE);
+        shooterWheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
+        //shooterWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        shooterWheel.setDirection(DcMotorEx.Direction.REVERSE);
 
-        ringDetector = hardwareMap.get(ColorSensor.class, "ringDetector");
+        ringDetector = hardwareMap.get(NormalizedColorSensor.class, "ringDetector");
+        ringDetector.setGain(2);
 
         intakeRoller = hardwareMap.get(DcMotor.class, "intakeRoller");
         intakeElevator = hardwareMap.get(DcMotor.class, "intakeElevator");
@@ -114,6 +132,8 @@ public class BotAppendages {
         goalGrabber = hardwareMap.get(Servo.class, "leftGrabberServo");
         goalLock = hardwareMap.get(Servo.class, "goalLock");
         goalLock.setDirection(Servo.Direction.REVERSE);
+
+        reachArm = hardwareMap.get(Servo.class, "reachArm");
     }
 
     public void setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern pattern) {
@@ -175,9 +195,11 @@ public class BotAppendages {
         }
     }
 
-    /*public boolean isRingLifterFull() {
-        return
-    }*/
+    public boolean isRingInElevator() {
+        ringDistanceMovingAverage.addData(((DistanceSensor) ringDetector).getDistance(DistanceUnit.CM));
+
+        return ringDistanceMovingAverage.getMean() > ELEVATOR_NO_RING_DISTANCE_THRESH;
+    }
 
     public void ringIntakeStart() {
         enableIntake(true);
@@ -187,11 +209,17 @@ public class BotAppendages {
         enableIntake(false);
     }
 
+    public void enableElevator(boolean enabled) {
+        elevatorEnabled = enabled;
+        //runIntake();
+    }
+
     public void enableIntake(boolean enabled) {
         intakeEnabled = enabled;
         runIntake();
     }
 
+    // Also sets direction of elevator
     public void setIntakeDirection(Direction direction) {
         intakeDirection = direction;
         runIntake();
@@ -202,12 +230,15 @@ public class BotAppendages {
         double intakeElevatorSpeed = 0;
         double intakeConveyorSpeed = 0;
 
-        if (intakeEnabled) {
-            double direction = intakeDirection == Direction.FORWARD ? 1 : -1;
+        double direction = intakeDirection == Direction.FORWARD ? 1 : -1;
 
-            intakeRollerSpeed = INTAKE_ROLLER_SPEED * direction;
+        if (elevatorEnabled) {
             intakeElevatorSpeed = INTAKE_ELEVATOR_SPEED * direction;
             intakeConveyorSpeed = INTAKE_CONVEYOR_SPEED * direction;
+        }
+
+        if (intakeEnabled) {
+            intakeRollerSpeed = INTAKE_ROLLER_SPEED * direction;
         }
 
         intakeRoller.setPower(intakeRollerSpeed);
@@ -255,5 +286,19 @@ public class BotAppendages {
 
         goalLockThread = new Thread(openTask);
         goalLockThread.start();
+    }
+
+    public void setReachArmPosition(ReachArmPosition position) {
+        switch (position) {
+            case RETRACTED:
+                reachArm.setPosition(RETRACTED_REACH_ARM_ANGLE);
+                break;
+            case SHOOTER_CLEARED:
+                reachArm.setPosition(SHOOTER_CLEARED_REACH_ARM_ANGLE);
+                break;
+            case EXTENDED:
+                reachArm.setPosition(EXTENDED_REACH_ARM_ANGLE);
+                break;
+        }
     }
 }

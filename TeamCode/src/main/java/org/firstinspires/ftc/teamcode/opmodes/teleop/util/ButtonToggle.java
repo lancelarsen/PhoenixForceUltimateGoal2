@@ -4,6 +4,14 @@ public class ButtonToggle {
     private boolean active;
     private boolean prePressed;
 
+    public ButtonToggle() {
+        active = false;
+    }
+
+    public ButtonToggle(boolean initActive) {
+        active = initActive;
+    }
+
     public boolean update(boolean currentlyPressed) {
         if (currentlyPressed && !prePressed) {
             prePressed = true;

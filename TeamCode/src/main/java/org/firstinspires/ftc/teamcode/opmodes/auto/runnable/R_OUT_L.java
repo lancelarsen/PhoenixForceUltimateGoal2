@@ -9,17 +9,16 @@ import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
+import org.firstinspires.ftc.teamcode.vision.RingVision;
 
-@Disabled
-@TeleOp(name = "Red->Outside A", group = "Auto")
-public class RedOutsideA extends AbstractAuto {
+@TeleOp(group = "auto")
+public class R_OUT_L extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
 
-        //--- Pick up wobble goal
-        //drive.builder(MecanumAuto.Speed.FAST).line(FieldPositions.S4W).follow();
-        appendages.openGoalGrabber(true); //--- close grabber
+        //--- Detect number of rings
+        RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
-        sleep(3000);
+        //TODO
     }
 }

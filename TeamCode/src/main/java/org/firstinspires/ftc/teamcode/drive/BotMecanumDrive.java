@@ -435,4 +435,8 @@ public class BotMecanumDrive extends MecanumDrive {
 
         return (double) imu.getAngularVelocity().zRotationRate;
     }
+
+    public void cancelFollowing() {
+        mode = Mode.IDLE;
+    }
 }

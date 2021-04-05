@@ -16,6 +16,7 @@ public class AppendagesAutonomous extends BotAppendages {
         this.opMode = opMode;
 
         openGoalGrabber(true);
+        setReachArmPosition(ReachArmPosition.RETRACTED);
     }
 
     public void wobbleGoalGrab() {

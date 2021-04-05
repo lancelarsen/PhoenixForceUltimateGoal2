@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.ButtonToggle;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
 
@@ -14,12 +15,14 @@ public class AppendagesTeleOp extends BotAppendages {
     private NanoClock nanoClock;
     private double startTime = -1;
 
-    private ButtonToggle shooterToggle = new ButtonToggle();
+    private ButtonToggle shooterToggle = new ButtonToggle(false);
     private boolean shootingInterruptedforMovement;
     private Thread shootThread;
     private GamepadUtils driverGamepad;
 
-    private ButtonToggle intakeToggle = new ButtonToggle();
+    private ButtonToggle intakeToggle = new ButtonToggle(false);
+    private boolean preRingInElevator = false;
+    private int numRingsInRobot = -1;
 
     private ButtonToggle goalLifterAdjToggle = new ButtonToggle();
     private boolean preAdjGoalLifter;
@@ -29,6 +32,8 @@ public class AppendagesTeleOp extends BotAppendages {
     private final Runnable shootTask = () -> {
         while (opMode.opModeIsActive()) {
             shootRings(1);
+
+            if (numRingsInRobot > 0) numRingsInRobot--;
         }
     };
 
@@ -45,7 +50,7 @@ public class AppendagesTeleOp extends BotAppendages {
         return goalLifterAdjToggle.isActive();
     }
 
-    public void updateLights() {
+    public void updateLights(AutoUtils.Alliance alliance) {
         if (startTime == -1) {
             startTime = nanoClock.seconds();
         }
@@ -54,7 +59,20 @@ public class AppendagesTeleOp extends BotAppendages {
         if (80 < activeTime && activeTime < 90) {
             setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_STROBE);
         } else {
-            setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+            switch (numRingsInRobot) {
+                case 0:
+                    setBlinkinPattern(alliance == AutoUtils.Alliance.BLUE ? RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE : RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+                    break;
+                case 1:
+                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+                    break;
+                case 2:
+                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                    break;
+                default:
+                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                    break;
+            }
         }
     }
 
@@ -86,8 +104,18 @@ public class AppendagesTeleOp extends BotAppendages {
     public void commandIntake() {
         setIntakeDirection(opMode.gamepad2.a ? Direction.REVERSE : Direction.FORWARD);
 
+        boolean ringInElevator = isRingInElevator();
+        if (ringInElevator && ringInElevator != preRingInElevator) {
+            numRingsInRobot++;
+        }
+        preRingInElevator = ringInElevator;
+
+        opMode.telemetry.addData("ringCount", numRingsInRobot);
+        opMode.telemetry.update();
+
         intakeToggle.update(opMode.gamepad2.b);
-        enableIntake(intakeToggle.isActive());
+        enableElevator(intakeToggle.isActive());
+        enableIntake(intakeToggle.isActive() && numRingsInRobot < 3);
     }
 
     public void commandGoalGrabber() {

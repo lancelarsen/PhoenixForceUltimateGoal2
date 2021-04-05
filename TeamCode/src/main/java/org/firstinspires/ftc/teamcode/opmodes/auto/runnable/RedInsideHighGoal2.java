@@ -10,7 +10,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 
-@TeleOp(name = "Red->Inside HG2", group = "drive")
+@TeleOp(group = "auto")
 public class RedInsideHighGoal2 extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);

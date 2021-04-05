@@ -11,7 +11,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
-@TeleOp(name = "Red->Inside PS", group = "drive")
+@TeleOp(group = "auto")
 public class RedInsidePowerShot extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);

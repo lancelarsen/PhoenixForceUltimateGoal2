@@ -11,8 +11,8 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
-@TeleOp(name = "AAA Red->Outside HG", group = "drive")
-public class RedOutsideHighGoal extends AbstractAuto {
+@TeleOp(group = "auto")
+public class R_OUT_HG_L extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
 
