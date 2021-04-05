@@ -15,6 +15,9 @@ import org.openftc.easyopencv.OpenCvCameraFactory;
 import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class RingVision {
     HardwareMap hardwareMap;
 
@@ -22,22 +25,16 @@ public class RingVision {
     RingVisionPipeline pipeline;
 
     public enum RingCount { FOUR, ONE, ZERO }
-
     public enum TargetZone { ZONE_A, ZONE_B, ZONE_C }
 
     private static final Scalar BLUE = new Scalar(0, 0, 255);
     private static final Scalar GREEN = new Scalar(0, 255, 0);
     private static final Scalar RED = new Scalar(255, 0, 0);
 
-    private int thresholdRingsFour = 0;
-    private int thresholdRingsOne = 0;
-    private int boxHeight = 0;
-    private int boxWidth = 0;
-    private int boxX = 0;
-    private int boxY = 0;
-
-    private Point regionTopLeft = new Point(0,0);
-    private Point regionBottomRight = new Point(0,0);
+    private int _thresholdRingsFour = 0;
+    private int _thresholdRingsOne = 0;
+    private Point _regionTopLeft = new Point(0,0);
+    private Point _regionBottomRight = new Point(0,0);
 
     public RingVision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -52,10 +49,15 @@ public class RingVision {
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
         );
 
+        int boxHeight = 0;
+        int boxWidth = 0;
+        int boxX = 0;
+        int boxY = 0;
+
         //--- Red - Right Starting (Far Right of Line)
         if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
-            thresholdRingsFour = 138;
-            thresholdRingsOne = 130;
+            _thresholdRingsFour = 138;
+            _thresholdRingsOne = 130;
             boxX = 10;
             boxY = 116;
             boxWidth = 26;
@@ -63,8 +65,8 @@ public class RingVision {
         }
         //--- Red - Left Starting (Far Left of Line)
         else if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            thresholdRingsFour = 138;
-            thresholdRingsOne = 130;
+            _thresholdRingsFour = 138;
+            _thresholdRingsOne = 130;
             boxX = 235;
             boxY = 126;
             boxWidth = 28;
@@ -72,8 +74,8 @@ public class RingVision {
         }
         //--- Blue - Right Starting (Far Right of Line)
         else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.INSIDE) {
-            thresholdRingsFour = 138;
-            thresholdRingsOne = 130;
+            _thresholdRingsFour = 138;
+            _thresholdRingsOne = 130;
             boxX = 10;
             boxY = 116;
             boxWidth = 26;
@@ -81,49 +83,21 @@ public class RingVision {
         }
         //--- Blue - Left Starting (Center of Line)
         else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
-            thresholdRingsFour = 138;
-            thresholdRingsOne = 130;
+            _thresholdRingsFour = 138;
+            _thresholdRingsOne = 130;
             boxX = 235;
             boxY = 126;
             boxWidth = 28;
             boxHeight = 20;
         }
 
-        regionTopLeft = new Point(boxX, boxY);
-        regionBottomRight = new Point(boxX + boxWidth, boxY + boxHeight);
+        _regionTopLeft = new Point(boxX, boxY);
+        _regionBottomRight = new Point(boxX + boxWidth, boxY + boxHeight);
 
         setViewportPaused(false);
     }
 
-    public void setViewportPaused(boolean paused) {
-        pipeline.setViewportPaused(paused);
-    }
-
-    public boolean isViewportPaused() {
-        return pipeline.viewportPaused;
-    }
-
-    public int getColorLevel() {
-        return pipeline.averageColorLevel;
-    }
-
-    public RingCount getRingCount() {
-        return pipeline.ringCount;
-    }
-
-    public TargetZone getTargetZone() {
-        switch (getRingCount()) {
-            case ONE:
-                return TargetZone.ZONE_B;
-            case FOUR:
-                return TargetZone.ZONE_C;
-            default:
-                return TargetZone.ZONE_A;
-        }
-    }
-
     private class RingVisionPipeline extends OpenCvPipeline {
-        Mat regionCb;
         Mat YCrCb = new Mat();
         Mat Cb = new Mat();
 
@@ -131,6 +105,8 @@ public class RingVision {
         private int averageColorLevel;
         // Volatile since accessed by OpMode thread w/o synchronization
         private volatile RingCount ringCount = RingCount.FOUR;
+
+        private List<RingsFound> regionsToSearch = new ArrayList<>();
 
         /*
         Takes the RGB, converts to YCrCb, and extracts the Cb channel to the 'Cb' variable
@@ -143,10 +119,21 @@ public class RingVision {
         @Override
         public void init(Mat input) {
             inputToCb(input);
-            regionCb = Cb.submat(new Rect(regionTopLeft, regionBottomRight));
+
+            regionsToSearch.add(AddRegionToSearch(0, 0));
+
+
         }
 
-        void drawDetectionPreview(Mat input) {
+        private RingsFound AddRegionToSearch(int offsetX, int offsetY)
+        {
+            RingsFound ringsFound = new RingsFound();
+            ringsFound.topLeft = new Point(_regionTopLeft.x + offsetX, _regionTopLeft.y + offsetY);
+            ringsFound.bottomRight = new Point(_regionBottomRight.x + offsetX, _regionBottomRight.y + offsetY);
+            return ringsFound;
+        }
+
+        void drawDetectionPreview(Mat input, RingCount count, int colorLevel, Point regionTopLeft, Point regionBottomRight) {
 
             // Draw box
             Imgproc.rectangle(
@@ -177,33 +164,66 @@ public class RingVision {
 
             // Draw text
             Scalar displayColor = RED;
-            if (pipeline.ringCount == RingCount.FOUR) {
+            if (count == RingCount.FOUR) {
                 displayColor = GREEN;
-            } else if (pipeline.ringCount == RingCount.ONE) {
+            } else if (count == RingCount.ONE) {
                 displayColor = BLUE;
             }
-            Imgproc.putText(input, ringCount + " RING(S)", new Point(75, 190), 1, 2, displayColor, 2);
-            Imgproc.putText(input, String.valueOf(averageColorLevel), new Point(135, 230), 1, 2, displayColor, 2);
+            Imgproc.putText(input, count + " RING(S)", new Point(75, 190), 1, 2, displayColor, 2);
+            Imgproc.putText(input, String.valueOf(colorLevel), new Point(135, 230), 1, 2, displayColor, 2);
         }
 
         @Override
         public Mat processFrame(Mat input) {
             // Calculate color level
             inputToCb(input);
-            averageColorLevel = (int) Core.mean(regionCb).val[0];
 
-            ringCount = RingCount.FOUR;
-            if (averageColorLevel > thresholdRingsFour) {
-                ringCount = RingCount.FOUR;
-            } else if (averageColorLevel > thresholdRingsOne) {
-                ringCount = RingCount.ONE;
-            } else {
-                ringCount = RingCount.ZERO;
-            }
+            RingsFound found = new RingsFound();
+            found = GetRingCountFromCoordinates(_regionTopLeft, _regionBottomRight);
 
-            drawDetectionPreview(input);
+            averageColorLevel = found.colorLevel;
+            ringCount = found.count;
+
+            drawDetectionPreview(input, found.count, found.colorLevel, found.topLeft, found.bottomRight);
 
             return input;
+        }
+
+        private RingsFound GetRingCountFromCoordinates(Point topLeft, Point bottomRight)
+        {
+            Mat region = Cb.submat(new Rect(topLeft, bottomRight));
+            RingsFound found = GetRingCountForRegion(region);
+            found.topLeft = topLeft;
+            found.bottomRight = bottomRight;
+            return found;
+        }
+
+        private RingsFound GetRingCountForRegion(Mat region)
+        {
+            RingsFound found = new RingsFound();
+            found.colorLevel = (int) Core.mean(region).val[0];
+            found.count = GetRingCountFromColorLevel(found.colorLevel);
+            return found;
+        }
+
+        private RingCount GetRingCountFromColorLevel(int level)
+        {
+            RingCount count;
+            if (level > _thresholdRingsFour) {
+                count = RingCount.FOUR;
+            } else if (level > _thresholdRingsOne) {
+                count = RingCount.ONE;
+            } else {
+                count = RingCount.ZERO;
+            }
+            return count;
+        }
+
+        private class RingsFound {
+            private RingCount count = RingCount.FOUR;
+            private int colorLevel = 0;
+            private Point topLeft = new Point(0,0);
+            private Point bottomRight = new Point(0,0);
         }
 
         @Override
@@ -231,6 +251,34 @@ public class RingVision {
             } else {
                 webcam.resumeViewport();
             }
+        }
+    }
+
+
+    public void setViewportPaused(boolean paused) {
+        pipeline.setViewportPaused(paused);
+    }
+
+    public boolean isViewportPaused() {
+        return pipeline.viewportPaused;
+    }
+
+    public int getColorLevel() {
+        return pipeline.averageColorLevel;
+    }
+
+    public RingCount getRingCount() {
+        return pipeline.ringCount;
+    }
+
+    public TargetZone getTargetZone() {
+        switch (getRingCount()) {
+            case ONE:
+                return TargetZone.ZONE_B;
+            case FOUR:
+                return TargetZone.ZONE_C;
+            default:
+                return TargetZone.ZONE_A;
         }
     }
 }
