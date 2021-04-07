@@ -58,20 +58,20 @@ public class AppendagesTeleOp extends BotAppendages {
         double activeTime = nanoClock.seconds() - startTime;
 
         if (80 < activeTime && activeTime < 90) {
-            setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.CP1_STROBE);
+            setBlinkinPattern(BlinkinPatterns.ENDGAME_WARNING_PATTERN);
         } else {
             switch (numRingsInRobot) {
                 case 0:
-                    setBlinkinPattern(alliance == AutoUtils.Alliance.BLUE ? RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_OCEAN_PALETTE : RevBlinkinLedDriver.BlinkinPattern.COLOR_WAVES_LAVA_PALETTE);
+                    setBlinkinPattern(alliance == AutoUtils.Alliance.BLUE ? BlinkinPatterns.BLUE_BASE_PATTERN : BlinkinPatterns.RED_BASE_PATTERN);
                     break;
                 case 1:
-                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
+                    setBlinkinPattern(BlinkinPatterns.ONE_RING_PATTERN);
                     break;
                 case 2:
-                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.RED_ORANGE);
+                    setBlinkinPattern(BlinkinPatterns.TWO_RING_PATTERN);
                     break;
                 default:
-                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                    setBlinkinPattern(BlinkinPatterns.THREE_RING_PATTERN);
                     break;
             }
         }

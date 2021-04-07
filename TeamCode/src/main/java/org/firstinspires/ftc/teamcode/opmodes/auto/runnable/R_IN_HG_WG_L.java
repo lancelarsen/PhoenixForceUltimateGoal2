@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
@@ -30,15 +29,27 @@ public class R_IN_HG_WG_L extends AbstractAuto {
         appendages.shootRings();
         appendages.shooterOff();
 
-        //--- Move to center point in back field
-        drive.curve(FieldPositions.C2B);
-
         //--- Drop wobble goal
-        drive.line(FieldPositions.W5S);
+        switch (targetZone) {
+            case ZONE_A:
+                drive.line(FieldPositions.X4);
+                sleep(10000);
+                drive.line(FieldPositions.W4I);
+                break;
+            case ZONE_B:
+                drive.line(FieldPositions.W5I); break;
+            case ZONE_C:
+                drive.line(FieldPositions.W6I); break;
+        }
         appendages.wobbleGoalDrop();
 
         //--- Park on line
-        drive.line(FieldPositions.X3R);
-        drive.line(FieldPositions.L2R);
+        switch (targetZone) {
+            case ZONE_A:
+                drive.line(FieldPositions.L2R); break;
+            case ZONE_B:
+            case ZONE_C:
+                drive.line(FieldPositions.L2); break;
+        }
     }
 }

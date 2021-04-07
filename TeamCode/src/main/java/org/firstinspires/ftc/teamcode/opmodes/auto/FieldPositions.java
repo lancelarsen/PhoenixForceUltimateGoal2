@@ -6,14 +6,14 @@ public class FieldPositions {
 
     //--- Starting positions
     public final static Pose2d S0 = new Pose2d(0, 0, SetFacing(Facing.GOAL));           //---X center of arena
-    public final static Pose2d S1 = new Pose2d(-63.5, 47, SetFacing(Facing.GOAL));      //---X blue outside
+    public final static Pose2d S1 = new Pose2d(-63.5, 52, SetFacing(Facing.GOAL));      //---X blue outside
     public final static Pose2d S2 = new Pose2d(-63.5, 11, SetFacing(Facing.GOAL));      //---X blue inside
     public final static Pose2d S3 = new Pose2d(-63.5, -16, SetFacing(Facing.GOAL));     //---X red inside
     public final static Pose2d S4 = new Pose2d(-63.5, -61, SetFacing(Facing.GOAL));     //---X red outside
     public final static Pose2d S5 = new Pose2d(-63.5, 0, SetFacing(Facing.GOAL));       //---X against wall, center
 
     //--- Wobble goal positions
-    public final static Pose2d S1W = new Pose2d(-60, 47, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, left blue
+    public final static Pose2d S1W = new Pose2d(-60, 53, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, left blue
     public final static Pose2d S2W = new Pose2d(-60, 11, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, right blue
     public final static Pose2d S3W = new Pose2d(-60, -16, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, left red
     public final static Pose2d S4W = new Pose2d(-60, -61, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, right red
@@ -21,8 +21,10 @@ public class FieldPositions {
     //--- Ring pickup positions
     public final static Pose2d R1 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
     public final static Pose2d R2 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
-    public final static Pose2d R3 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
-    public final static Pose2d R4 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
+    public final static Pose2d R3 = new Pose2d(0, 0, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4A = new Pose2d(-10, -35, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4B = new Pose2d(-20, -35, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4C = new Pose2d(-35, -35, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
 
     //--- Transition positions
     public final static Pose2d X0 = new Pose2d(0, 0, SetFacing(Facing.GOAL));                   //--- center of the arena
@@ -31,13 +33,17 @@ public class FieldPositions {
     public final static Pose2d X3 = new Pose2d(45, 0, SetFacing(Facing.GOAL));                  //---X center of close to target zone
     public final static Pose2d X3R = new Pose2d(45, 0, SetFacing(Facing.BACK_ROTATE_RIGHT));    //---X center of close to target zone (reversed)
 
+    public final static Pose2d X4 = new Pose2d(30, -15, SetFacing(Facing.BACK_ROTATE_RIGHT));    //---X center of close to target zone (reversed)
+
     //--- White line positions
     public final static Pose2d L0 = new Pose2d(10, 0, SetFacing(Facing.GOAL));                  //---X center on white line
     public final static Pose2d L0R = new Pose2d(10, 0, SetFacing(Facing.BACK_ROTATE_RIGHT));    //--- center on white line (reversed)
-    public final static Pose2d L1 = new Pose2d(10, 11, SetFacing(Facing.GOAL));                 //--- blue side, park on line
+    public final static Pose2d L1 = new Pose2d(10, 11, SetFacing(Facing.GOAL));                 //---XX blue side, park on line
     public final static Pose2d L1R = new Pose2d(10, 11, SetFacing(Facing.BACK_ROTATE_RIGHT));   //--- blue side, park on line (reversed)
     public final static Pose2d L2 = new Pose2d(10, -11, SetFacing(Facing.GOAL));                //--- red side, park on line
-    public final static Pose2d L2R = new Pose2d(10, -11, SetFacing(Facing.BACK_ROTATE_RIGHT));  //---X red side, park on line (reversed)
+    public final static Pose2d L2R = new Pose2d(10, -11, SetFacing(Facing.BACK_ROTATE_RIGHT));  //---XX red side, park on line (reversed)
+    public final static Pose2d L3 = new Pose2d(3, -61, SetFacing(Facing.RIGHT));                //---XX red side, park on line
+    public final static Pose2d L4 = new Pose2d(1, 61, SetFacing(Facing.RIGHT));                 //---XX blue side, park on line
 
     //--- Wobble goal target positions
     public final static Pose2d W1 = new Pose2d(3, 60, SetFacing(Facing.GOAL));  //---
@@ -48,10 +54,16 @@ public class FieldPositions {
     public final static Pose2d W6 = new Pose2d(0, 0, SetFacing(Facing.GOAL));   //---
 
     //--- Wobble goal target positions (outside missions)
-    public final static Pose2d W4O = new Pose2d(30, -61, SetFacing(Facing.RIGHT));  //--- X red A
-    public final static Pose2d W5O = new Pose2d(52, -45, SetFacing(Facing.RIGHT));  //--- X red B
-    public final static Pose2d W6O = new Pose2d(48, -59, SetFacing(Facing.LEFT));   //--- X red C
-    public final static Pose2d W6O_2 = new Pose2d(44, -63, SetFacing(Facing.LEFT)); //--- X red C (2nd wobble)
+    public final static Pose2d W4O = new Pose2d(30, -61, SetFacing(Facing.RIGHT));      //---X red A
+    public final static Pose2d W5O = new Pose2d(52, -45, SetFacing(Facing.LEFT));       //---X red B
+    public final static Pose2d W6O = new Pose2d(48, -59, SetFacing(Facing.RIGHT));      //---X red C
+    public final static Pose2d W6O_2 = new Pose2d(44, -63, SetFacing(Facing.RIGHT));    //---X red C (2nd wobble)
+
+    //--- Wobble goal target positions (inside missions)
+    public final static Pose2d W4I = new Pose2d(27, -61, SetFacing(Facing.LEFT));       //---XX red A
+    public final static Pose2d W5I = new Pose2d(52, -42, SetFacing(Facing.LEFT));       //---XX red B
+    public final static Pose2d W6I = new Pose2d(58, -45, SetFacing(Facing.BACK_ROTATE_LEFT));      //---XX red C
+//    public final static Pose2d W6I_2 = new Pose2d(44, -63, SetFacing(Facing.RIGHT));    //---X red C (2nd wobble)
 
     //--- Special path back from R OUT - Zone C to grab wobble goal
     public final static Pose2d S3G_1 = new Pose2d(63, -30, Math.toRadians(180));  //---
@@ -77,7 +89,7 @@ public class FieldPositions {
     public final static Pose2d T1 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static Pose2d T2 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static Pose2d T3 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
-    public final static Pose2d T4 = new Pose2d(-4, -26, SetFacing(Facing.GOAL));    //---X red center front line
+    public final static Pose2d T4 = new Pose2d(-4, -26, SetFacing(Facing.GOAL));    //---XX red center front line
     public final static Pose2d T5 = new Pose2d(-4, -61, Math.toRadians(23));        //---X red outside front line
     public final static Pose2d T6 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static Pose2d T7 = new Pose2d(-4, -16, Math.toRadians(-6));        //---X red inside front line
@@ -89,12 +101,12 @@ public class FieldPositions {
     public final static double P2A[] = { -8, -8 };
     public final static Pose2d P3 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static double P3A[] = { 8, 8 };
-    public final static Pose2d P4 = new Pose2d(-4, -10, SetFacing(Facing.GOAL));    //---X red inside power show
-    public final static double P4A[] = { 8, 8 };
+    public final static Pose2d P4 = new Pose2d(-4, -10, Math.toRadians(-1));    //---X red inside power show
+    public final static double P4A[] = { 9, 8 };
     public final static Pose2d P5 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //--- blue outside power show
     public final static double P5A[] = { 8, 8 };
     public final static Pose2d P6 = new Pose2d(-4, -61, Math.toRadians(33));        //---X red outside power shot
-    public final static double P6A[] = { 4, 8 };
+    public final static double P6A[] = { 5, 8 };
 
     private enum Facing
     {
@@ -111,8 +123,8 @@ public class FieldPositions {
         switch (facing)
         {
             case GOAL: angle = 0; break;
-            case LEFT: angle = -90; break;
-            case RIGHT: angle = 90; break;
+            case LEFT: angle = 90; break;
+            case RIGHT: angle = -90; break;
             case BACK_ROTATE_LEFT: angle = -180; break;
             case BACK_ROTATE_RIGHT: angle = 180; break;
         }

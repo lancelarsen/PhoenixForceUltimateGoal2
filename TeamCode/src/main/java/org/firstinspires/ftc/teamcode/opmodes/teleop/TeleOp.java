@@ -3,10 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.teleop;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.Gamepad;
 
-import org.apache.commons.math3.geometry.euclidean.twod.Line;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
 import org.firstinspires.ftc.teamcode.appendages.AppendagesTeleOp;
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
@@ -14,8 +11,6 @@ import org.firstinspires.ftc.teamcode.drive.MecanumTeleOp;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
-
-import java.util.concurrent.TimeUnit;
 
 //----------------------------------------------------------------------
 // Gamepad 1
@@ -52,23 +47,25 @@ import java.util.concurrent.TimeUnit;
 //----------------------------------------------------------------------
 
 public class TeleOp {
-    LinearOpMode opMode;
-    AutoUtils.Alliance alliance;
+    private LinearOpMode opMode;
+    private AutoUtils.Alliance alliance;
 
-    AppendagesTeleOp appendages;
-    MecanumTeleOp mecanumTeleOp;
-    MecanumAutonomous mecanumAutonomous;
+    private volatile AppendagesTeleOp appendages;
+    private volatile MecanumTeleOp mecanum;
 
-    GamepadUtils driverGamepad;
-    Thread shootThread;
+    private GamepadUtils driverGamepad;
+    private Thread shootThread;
 
-    final static Pose2d BLUE_SIDE_INIT_POWERSHOT_POSE = new Pose2d(10, -61, Math.toRadians(0));
-    final static Pose2d BLUE_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, 11, Math.toRadians(0));
-    final static Pose2d RED_SIDE_INIT_POWERSHOT_POSE = new Pose2d(10, -61, Math.toRadians(0));
-    final static Pose2d RED_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, -11, Math.toRadians(0));
+    private boolean hasLocalizedRobot = false;
+    private int autoPowershotsShot = 0;
 
-    final static long AUTO_POWERSHOT_SHOOT_DELAY = 1000;
-    final static long AUTO_POWERSHOT_MOVE_DELAY = 1000;
+    private final static Pose2d BLUE_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, -61, Math.toRadians(0));
+    private final static Pose2d BLUE_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, 11, Math.toRadians(0));
+    private final static Pose2d RED_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, -61, Math.toRadians(0));
+    private final static Pose2d RED_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, -11, Math.toRadians(0));
+
+    private final static long AUTO_POWERSHOT_SHOOT_DELAY = 1000;
+    private final static long AUTO_POWERSHOT_MOVE_DELAY = 1000;
 
     public TeleOp(LinearOpMode opMode, AutoUtils.Alliance alliance) {
         this.opMode = opMode;
@@ -76,8 +73,7 @@ public class TeleOp {
 
         appendages = new AppendagesTeleOp(opMode);
 
-        mecanumTeleOp = new MecanumTeleOp(opMode);
-        mecanumAutonomous = new MecanumAutonomous(opMode);
+        mecanum = new MecanumTeleOp(opMode);
 
         driverGamepad = new GamepadUtils(opMode.gamepad1);
     }
@@ -90,12 +86,14 @@ public class TeleOp {
 
         commandPowershotShooting();
 
-        mecanumTeleOp.enableTurning(!appendages.isAdjGoalLifterPosition());
-        mecanumTeleOp.arcadeDrive();
+        mecanum.enableTurning(!appendages.isAdjGoalLifterPosition());
+        mecanum.arcadeDrive();
     }
 
     private void commandPowershotShooting() {
         if (opMode.gamepad2.left_bumper) {
+            if (!hasLocalizedRobot) return;
+
             switch (alliance) {
                 case BLUE:
                     shootPowershots(FieldPositions.P2, FieldPositions.P2A);
@@ -105,75 +103,81 @@ public class TeleOp {
                     break;
             }
         } else if (opMode.gamepad2.dpad_up) {
+            hasLocalizedRobot = true;
+            autoPowershotsShot = 0;
+
             switch (alliance) {
                 case BLUE:
-                    mecanumAutonomous.setCurrentPosition(BLUE_FRONT_INIT_POWERSHOT_POSE);
+                    mecanum.setPoseEstimate(BLUE_FRONT_INIT_POWERSHOT_POSE);
                     shootPowershots(FieldPositions.P2, FieldPositions.P2A);
                     break;
                 case RED:
-                    mecanumAutonomous.setCurrentPosition(RED_FRONT_INIT_POWERSHOT_POSE);
+                    mecanum.setPoseEstimate(RED_FRONT_INIT_POWERSHOT_POSE);
                     shootPowershots(FieldPositions.P4, FieldPositions.P4A);
                     break;
             }
         } else if (opMode.gamepad2.dpad_left && alliance == AutoUtils.Alliance.BLUE) {
-            mecanumAutonomous.setCurrentPosition(BLUE_SIDE_INIT_POWERSHOT_POSE);
+            hasLocalizedRobot = true;
+            autoPowershotsShot = 0;
+
+            mecanum.setPoseEstimate(BLUE_SIDE_INIT_POWERSHOT_POSE);
             shootPowershots(FieldPositions.P2, FieldPositions.P2A);
         } else if (opMode.gamepad2.dpad_right && alliance == AutoUtils.Alliance.RED) {
-            mecanumAutonomous.setCurrentPosition(RED_SIDE_INIT_POWERSHOT_POSE);
+            hasLocalizedRobot = true;
+            autoPowershotsShot = 0;
+
+            mecanum.setPoseEstimate(RED_SIDE_INIT_POWERSHOT_POSE);
             shootPowershots(FieldPositions.P4, FieldPositions.P4A);
         }
-
-        //appendages.shooterOff();
     }
 
-    private void shootPowershots(Pose2d shootingPose, double turnAngles[]/*, int ringsToShoot*/) {
-        appendages.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
+    private void shootPowershots(Pose2d shootingPose, double turnAngles[]) {
+        Runnable shootTask = () -> {
+            try {
+                appendages.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
 
-        Trajectory shootingTrajectory =  mecanumAutonomous.trajectoryBuilder(mecanumAutonomous.getPoseEstimate())
-                .lineToLinearHeading(shootingPose)
-                .build();
+                Trajectory shootingTrajectory = mecanum.trajectoryBuilder(mecanum.getPoseEstimate())
+                        .lineToLinearHeading(shootingPose)
+                        .build();
 
-        mecanumAutonomous.followTrajectoryAsync(shootingTrajectory);
-        while (mecanumAutonomous.isBusy()) {
-            mecanumAutonomous.update();
-            if (!canContinueShooting()) {
-                mecanumAutonomous.cancelFollowing();
-                return;
-            }
-        }
-        mecanumAutonomous.setCurrentPosition(shootingTrajectory.end());
-
-        Deadline deadline = new Deadline(500, TimeUnit.MILLISECONDS);
-        while (!deadline.hasExpired()) {
-            if (!canContinueShooting()) {
-                return;
-            }
-        }
-
-        for (int i = 0; i < 3/* - ringsToShoot*/; i++) {
-            appendages.shootRings(1);
-
-            deadline = new Deadline(AUTO_POWERSHOT_SHOOT_DELAY, TimeUnit.MILLISECONDS);
-            while (!deadline.hasExpired()) {
-                if (!canContinueShooting()) {
-                    return;
+                mecanum.followTrajectoryAsync(shootingTrajectory);
+                while (mecanum.isBusy()) {
+                    mecanum.update();
+                    if (Thread.interrupted()) {
+                        mecanum.cancelFollowing();
+                        return;
+                    }
                 }
-            }
 
-            if (i == 3/* - ringsToShoot*/) break;
+                Thread.sleep(500);
 
-            mecanumAutonomous.turnLeft(turnAngles[i]);
+                int previousPowershotsShot = autoPowershotsShot;
 
-            deadline = new Deadline(AUTO_POWERSHOT_MOVE_DELAY, TimeUnit.MILLISECONDS);
-            while (!deadline.hasExpired()) {
-                if (!canContinueShooting()) {
-                    return;
+                for (int i = 0; i < 3; i++) {
+                    // Don't shoot powershots already shot
+                    if (i + 1 <= previousPowershotsShot) continue;
+
+                    appendages.shootRings(1);
+                    autoPowershotsShot++;
+
+                    Thread.sleep(AUTO_POWERSHOT_SHOOT_DELAY);
+
+                    if (i == 2) break;
+
+                    mecanum.turnAsync(Math.toRadians(turnAngles[i]));
+                    mecanum.waitForIdle();
+                    Thread.sleep(AUTO_POWERSHOT_MOVE_DELAY);
                 }
+            } catch (InterruptedException e) {};
+        };
+
+        shootThread = new Thread(shootTask);
+        shootThread.start();
+
+        while (shootThread.isAlive()) {
+            if (driverGamepad.areJoysticksActive() || driverGamepad.isDpadActive() || !opMode.opModeIsActive()) {
+                shootThread.interrupt();
             }
         }
-    }
-
-    boolean canContinueShooting() {
-        return !driverGamepad.areJoysticksActive() && !driverGamepad.isDpadActive() && opMode.opModeIsActive();
     }
 }

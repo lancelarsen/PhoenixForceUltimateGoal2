@@ -58,8 +58,6 @@ public class R_OUT_PS_WGx2_L extends AbstractAuto {
             case ZONE_C:
                 //--- Go back to grab the other wobble goal
                 drive.line(FieldPositions.S3G_1);
-//                drive.setMotorPowers(-0.5, -0.5, -0.5, -0.5);
-//                sleep(1000);
                 drive.line(FieldPositions.S3G_2);
                 drive.line(FieldPositions.S3G_3);
                 appendages.wobbleGoalGrab();

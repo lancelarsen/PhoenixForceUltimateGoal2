@@ -4,6 +4,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
+import org.firstinspires.ftc.teamcode.appendages.BlinkinPatterns;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
@@ -15,10 +16,6 @@ abstract public class AbstractAuto extends LinearOpMode {
     private static final long LIGHT_LONG_FLASH_ON_TIME = 1500;
     private static final long LIGHT_SHORT_FLASH_ON_TIME = 500;
     private static final long LIGHT_FLASH_OFF_TIME = 250;
-
-    private static final RevBlinkinLedDriver.BlinkinPattern RED_ALLIANCE_BASE_PATTERN = RevBlinkinLedDriver.BlinkinPattern.RED;
-    private static final RevBlinkinLedDriver.BlinkinPattern BLUE_ALLIANCE_BASE_PATTERN = RevBlinkinLedDriver.BlinkinPattern.BLUE;
-    private static final RevBlinkinLedDriver.BlinkinPattern RING_FLASH_COLOR = RevBlinkinLedDriver.BlinkinPattern.ORANGE;
 
     private enum FlashLength {
         LONG,
@@ -41,7 +38,7 @@ abstract public class AbstractAuto extends LinearOpMode {
                 drive.setCurrentPosition(FieldPositions.S2);
             }
 
-            updateLights(BLUE_ALLIANCE_BASE_PATTERN);
+            updateLights(BlinkinPatterns.BLUE_BASE_PATTERN);
         } else {
             if (startingPosition == AutoUtils.StartingPosition.INSIDE) {
                 drive.setCurrentPosition(FieldPositions.S3);
@@ -49,7 +46,7 @@ abstract public class AbstractAuto extends LinearOpMode {
                 drive.setCurrentPosition(FieldPositions.S4);
             }
 
-            updateLights(RED_ALLIANCE_BASE_PATTERN);
+            updateLights(BlinkinPatterns.RED_BASE_PATTERN);
         }
 
         if (isStopRequested()) return;
@@ -78,7 +75,7 @@ abstract public class AbstractAuto extends LinearOpMode {
                 }
 
                 for (int i = 0; i < ringCount; i++) {
-                    flashLights(RING_FLASH_COLOR, FlashLength.SHORT);
+                    flashLights(BlinkinPatterns.RING_PATTERN, FlashLength.SHORT);
                 }
             }
         };
@@ -100,6 +97,6 @@ abstract public class AbstractAuto extends LinearOpMode {
     }
 
     private void lightsOff() {
-        appendages.setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        appendages.setBlinkinPattern(BlinkinPatterns.OFF);
     }
 }

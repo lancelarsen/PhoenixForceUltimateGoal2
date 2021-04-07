@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
+@Disabled
 @Autonomous(group = "auto")
 public class R_OUT_HG_L extends AbstractAuto {
     public void runOpMode() {
@@ -20,43 +22,38 @@ public class R_OUT_HG_L extends AbstractAuto {
         //--- Detect number of rings
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
-        switch (targetZone) {
-            case ZONE_A:
-                // Zone A
-            case ZONE_B:
-                // Zone B
-            case ZONE_C:
-                // Zone C
-        }
-
         //--- Grab wobble goal
         drive.line(FieldPositions.S4W);
         appendages.wobbleGoalGrab();
 
-        //--- Shoot power shots
+        //--- Shoot top goal
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
         drive.curve(FieldPositions.T5);
-        for (int i = 0; i < 3; i++) {
-            sleep(500);
-            appendages.shootRings(1);
-        }
-        appendages.setShooterSpeed(BotAppendages.ShooterSpeed.OFF);
-
-        //--- Pick up rings near power shots
-//        appendages.ringIntakeStart();
-//        drive.curve(FieldPositions.C2A);
-//        drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
-//        drive.curve(FieldPositions.C2B);
-//        drive.setSpeed(MecanumAutonomous.Speed.FAST);
-//        appendages.ringIntakeStop();
+        appendages.shootRings();
+        appendages.shooterOff();
 
         //--- Drop wobble goal
-//        drive.line(FieldPositions.W5S);
-//        appendages.wobbleGoalDrop();
+        switch (targetZone) {
+            case ZONE_A:
+                drive.line(FieldPositions.X4);
+                sleep(10000);
+                drive.line(FieldPositions.W4O);
+                break;
+            case ZONE_B:
+                drive.line(FieldPositions.W5O); break;
+            case ZONE_C:
+                drive.line(FieldPositions.W6O); break;
+        }
+        appendages.wobbleGoalDrop();
 
         //--- Park on line
-//        drive.line(FieldPositions.X3R);
-//        drive.line(FieldPositions.L2R);
+//        switch (targetZone) {
+//            case ZONE_A:
+//                drive.line(FieldPositions.L2R); break;
+//            case ZONE_B:
+//            case ZONE_C:
+//                drive.line(FieldPositions.L2); break;
+//        }
 
         //--- Return to start
         sleep(5000);

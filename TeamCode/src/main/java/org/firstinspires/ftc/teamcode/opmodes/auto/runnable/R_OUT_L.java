@@ -20,6 +20,19 @@ public class R_OUT_L extends AbstractAuto {
         //--- Detect number of rings
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
-        //TODO
+        //--- Grab wobble goal
+        drive.line(FieldPositions.S4W);
+        appendages.wobbleGoalGrab();
+
+        //--- Wait for 20 seconds
+        sleep(20000);
+
+        //--- park on line, drop wobble goal
+        drive.line(FieldPositions.L3);
+        appendages.wobbleGoalDrop();
+
+        //--- temporary
+//        sleep(4000);
+//        drive.line(FieldPositions.S4);
     }
 }
