@@ -36,6 +36,8 @@ public class RingVision {
     private int _thresholdRingsOne = 0;
     private Point _regionTopLeft = new Point(0,0);
     private Point _regionBottomRight = new Point(0,0);
+    AutoUtils.Alliance _alliance;
+    AutoUtils.StartingPosition _startingPosition;
 
     public RingVision(HardwareMap hardwareMap) {
         this.hardwareMap = hardwareMap;
@@ -49,6 +51,9 @@ public class RingVision {
         webcam.openCameraDeviceAsync(() ->
                 webcam.startStreaming(320, 240, OpenCvCameraRotation.UPRIGHT)
         );
+
+        _alliance = alliance;
+        _startingPosition = startingPosition;
 
         int boxHeight = 0;
         int boxWidth = 0;
@@ -67,7 +72,7 @@ public class RingVision {
         //--- Red - Left Starting (Far Left of Line)
         else if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.INSIDE) {
             _thresholdRingsFour = 138;
-            _thresholdRingsOne = 130;
+            _thresholdRingsOne = 132;
             boxX = 235;
             boxY = 126;
             boxWidth = 28;
@@ -76,7 +81,7 @@ public class RingVision {
         //--- Blue - Right Starting (Far Right of Line)
         else if (alliance == AutoUtils.Alliance.BLUE && startingPosition == AutoUtils.StartingPosition.INSIDE) {
             _thresholdRingsFour = 138;
-            _thresholdRingsOne = 130;
+            _thresholdRingsOne = 128;
             boxX = 10;
             boxY = 116;
             boxWidth = 26;
@@ -178,8 +183,29 @@ public class RingVision {
             } else if (count == RingCount.ONE) {
                 displayColor = BLUE;
             }
-            Imgproc.putText(input, count + " RING(S)", new Point(75, 190), 1, 2, displayColor, 2);
+            Imgproc.putText(input, count + " RINGS", new Point(75, 190), 1, 2, displayColor, 2);
             Imgproc.putText(input, String.valueOf(colorLevel), new Point(135, 230), 1, 2, displayColor, 2);
+
+            if (_alliance == AutoUtils.Alliance.RED)
+            {
+                Imgproc.putText(input, "RED ALLIANCE", new Point(5, 30), 1, 1.5, RED, 2);
+            }
+            else
+            {
+                Imgproc.putText(input, "BLUE ALLIANCE", new Point(5, 30), 1, 1.5, BLUE, 2);
+            }
+
+            if (_startingPosition == AutoUtils.StartingPosition.OUTSIDE)
+            {
+                Imgproc.putText(input, "OUTSIDE", new Point(5, 60), 1, 1.5, RED, 2);
+            }
+            else
+            {
+                Imgproc.putText(input, "INSIDE", new Point(5, 60), 1, 1.5, BLUE, 2);
+            }
+
+            Imgproc.putText(input, "4 RINGS: " + _thresholdRingsFour, new Point(10, 90), 1, 1.5, GREEN, 2);
+            Imgproc.putText(input, "1 RING: " + _thresholdRingsOne, new Point(10, 120), 1, 1.5, BLUE, 2);
         }
 
         @Override

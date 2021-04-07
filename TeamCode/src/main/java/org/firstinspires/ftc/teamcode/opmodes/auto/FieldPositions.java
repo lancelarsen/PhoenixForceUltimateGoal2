@@ -93,7 +93,7 @@ public class FieldPositions {
     public final static double P4A[] = { 8, 8 };
     public final static Pose2d P5 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //--- blue outside power show
     public final static double P5A[] = { 8, 8 };
-    public final static Pose2d P6 = new Pose2d(-4, -61, Math.toRadians(34));        //---X red outside power shot
+    public final static Pose2d P6 = new Pose2d(-4, -61, Math.toRadians(33));        //---X red outside power shot
     public final static double P6A[] = { 4, 8 };
 
     private enum Facing

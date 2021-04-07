@@ -15,12 +15,13 @@ public class AppendagesTeleOp extends BotAppendages {
     private NanoClock nanoClock;
     private double startTime = -1;
 
-    private ButtonToggle shooterToggle = new ButtonToggle(false);
+    private ButtonToggle shooterToggle = new ButtonToggle(true);
     private boolean shootingInterruptedforMovement;
     private Thread shootThread;
     private GamepadUtils driverGamepad;
 
-    private ButtonToggle intakeToggle = new ButtonToggle(false);
+    private ButtonToggle intakeToggle = new ButtonToggle(true);
+    private boolean preIntakeToggleState = false;
     private boolean preRingInElevator = false;
     private int numRingsInRobot = -1;
 
@@ -67,7 +68,7 @@ public class AppendagesTeleOp extends BotAppendages {
                     setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.YELLOW);
                     break;
                 case 2:
-                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.ORANGE);
+                    setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.RED_ORANGE);
                     break;
                 default:
                     setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
@@ -77,7 +78,7 @@ public class AppendagesTeleOp extends BotAppendages {
     }
 
     public void commandShooter() {
-        if (opMode.gamepad2.x && !shootingInterruptedforMovement && !driverGamepad.areJoysticksActive() && !driverGamepad.isDpadActive()) {
+        if (opMode.gamepad2.x && shooterToggle.isActive() && !shootingInterruptedforMovement && !driverGamepad.areJoysticksActive() && !driverGamepad.isDpadActive()) {
             if (shootThread == null || !shootThread.isAlive()) {
                 shootThread = new Thread(shootTask);
                 shootThread.start();
@@ -106,14 +107,22 @@ public class AppendagesTeleOp extends BotAppendages {
 
         boolean ringInElevator = isRingInElevator();
         if (ringInElevator && ringInElevator != preRingInElevator) {
-            numRingsInRobot++;
+            if (numRingsInRobot < 3) numRingsInRobot++;
         }
         preRingInElevator = ringInElevator;
 
         opMode.telemetry.addData("ringCount", numRingsInRobot);
         opMode.telemetry.update();
 
+        // If intake toggled from on to off when # of rings in robot 3 (therefore the intake already disabled),
+        // don't toggle intake and let the user intake one more ring, assuming a sensor error
         intakeToggle.update(opMode.gamepad2.b);
+        if (numRingsInRobot == 3 && preIntakeToggleState == true && intakeToggle.isActive() == false) {
+            numRingsInRobot--;
+            intakeToggle.setActive(true);
+        }
+        preIntakeToggleState = intakeToggle.isActive();
+
         enableElevator(intakeToggle.isActive());
         enableIntake(intakeToggle.isActive() && numRingsInRobot < 3);
     }

@@ -12,13 +12,14 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
-@TeleOp(group = "auto")
+@Autonomous(group = "auto")
 public class R_OUT_PS_WGx2_L extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
 
         //--- Detect number of rings
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
+        targetZone = targetZone.ZONE_C; //--- TEMPORARY
 
         //--- Grab wobble goal
         drive.line(FieldPositions.S4W);

@@ -5,6 +5,7 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.demo;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -21,6 +22,7 @@ import org.openftc.easyopencv.OpenCvCameraRotation;
 import org.openftc.easyopencv.OpenCvPipeline;
 
 @SuppressWarnings("SpellCheckingInspection")
+@Disabled
 @TeleOp(name = "Vision Ring Count", group = "Test")
 public class VisionRingCount extends LinearOpMode
 {

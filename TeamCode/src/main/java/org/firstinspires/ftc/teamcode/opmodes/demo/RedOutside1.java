@@ -14,6 +14,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 
+@Disabled
 @TeleOp(name = "DEMO Red->Outside 1", group = "Auto")
 public class RedOutside1 extends LinearOpMode {
 

@@ -51,9 +51,9 @@ public class BotAppendages {
     public final static double OPEN_GOAL_LOCK_ANGLE = 0.5;
     public final static double CLOSED_GOAL_LOCK_ANGLE = 0;
 
-    public final static double RETRACTED_REACH_ARM_ANGLE = 0.2;
-    public final static double SHOOTER_CLEARED_REACH_ARM_ANGLE = 0.5;
-    public final static double EXTENDED_REACH_ARM_ANGLE = 0.8;
+    public final static double RETRACTED_REACH_ARM_ANGLE = 0.8;
+    public final static double SHOOTER_CLEARED_REACH_ARM_ANGLE = 0.7;
+    public final static double EXTENDED_REACH_ARM_ANGLE = 0.4;
 
     public final RevBlinkinLedDriver blinkin;
     public RevBlinkinLedDriver.BlinkinPattern blinkinPattern;
@@ -134,6 +134,8 @@ public class BotAppendages {
         goalLock.setDirection(Servo.Direction.REVERSE);
 
         reachArm = hardwareMap.get(Servo.class, "reachArm");
+
+        setReachArmPosition(ReachArmPosition.RETRACTED);
     }
 
     public void setBlinkinPattern(RevBlinkinLedDriver.BlinkinPattern pattern) {
@@ -161,6 +163,10 @@ public class BotAppendages {
     }
 
     public void setShooterSpeed(ShooterSpeed speed) {
+        if (speed != ShooterSpeed.OFF) {
+            setReachArmPosition(ReachArmPosition.SHOOTER_CLEARED);
+        }
+
         switch (speed) {
             case HIGH_GOAL:
                 shooterWheel.setVelocity(RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL);

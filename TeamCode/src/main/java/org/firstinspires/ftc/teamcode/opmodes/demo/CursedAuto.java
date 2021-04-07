@@ -31,6 +31,7 @@ package org.firstinspires.ftc.teamcode.opmodes.demo;
  * This is a simple routine to test translational drive capabilities.
  */
 @Config
+@Disabled
 @Autonomous(group = "drive")
 public class CursedAuto extends LinearOpMode {
     @Override

@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.opmodes.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.appendages.AppendagesTeleOp;
 import org.firstinspires.ftc.teamcode.appendages.utils.EncoderUtil;
 import org.firstinspires.ftc.teamcode.drive.MecanumTeleOp;
 
+@Disabled
 @com.qualcomm.robotcore.eventloop.opmode.TeleOp(name="ShooterTest", group="1")
 public class ShooterTest extends LinearOpMode {
 

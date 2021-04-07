@@ -38,4 +38,8 @@ public class AppendagesAutonomous extends BotAppendages {
         openGoalGrabber(true);
         sleep(GOAL_GRABBER_OPEN_DELAY);
     }
+
+    public void extendReachArm() {
+        setReachArmPosition(ReachArmPosition.EXTENDED);
+    }
 }

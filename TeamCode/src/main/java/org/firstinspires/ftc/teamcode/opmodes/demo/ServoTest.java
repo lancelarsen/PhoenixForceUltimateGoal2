@@ -5,6 +5,7 @@
 
 package org.firstinspires.ftc.teamcode.opmodes.demo;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -12,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 @SuppressWarnings("SpellCheckingInspection")
+@Disabled
 @TeleOp(name = "Servo Test", group = "Test")
 public class ServoTest extends LinearOpMode {
     @Override
