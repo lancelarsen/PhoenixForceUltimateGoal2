@@ -188,6 +188,7 @@ public class BotAppendages {
         for (int i = 0; i < num; i++) {
             extendShooterArm(true);
             sleep(SHOOTER_ARM_EXTEND_DELAY);
+            if (i==0) sleep(100);   //--- Give first shot a bit longer to engage with weight of other two rings on top
             extendShooterArm(false);
             sleep(SHOOTER_ARM_RETRACT_DELAY);
         }

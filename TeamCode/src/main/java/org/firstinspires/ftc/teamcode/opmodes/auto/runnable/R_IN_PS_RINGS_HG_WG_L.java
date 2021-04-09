@@ -54,7 +54,6 @@ public class R_IN_PS_RINGS_HG_WG_L extends AbstractAuto {
                 break;
             case ZONE_C:
                 //TODO: Count rings to stop taking in too many
-
                 drive.turnRight(15);
                 drive.line(FieldPositions.R4A);
                 drive.line(FieldPositions.R4B);

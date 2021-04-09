@@ -11,6 +11,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
+@Disabled
 @Autonomous(group = "auto")
 public class R_IN_PS_WG_RINGS_HG_L extends AbstractAuto {
     public void runOpMode() {

@@ -67,7 +67,7 @@ public class RingVision {
             boxX = 10;
             boxY = 116;
             boxWidth = 26;
-            boxHeight = 20;
+            boxHeight = 17;
         }
         //--- Red - Left Starting (Far Left of Line)
         else if (alliance == AutoUtils.Alliance.RED && startingPosition == AutoUtils.StartingPosition.INSIDE) {
@@ -94,7 +94,7 @@ public class RingVision {
             boxX = 235;
             boxY = 126;
             boxWidth = 28;
-            boxHeight = 20;
+            boxHeight = 17;
         }
 
         _regionTopLeft = new Point(boxX, boxY);

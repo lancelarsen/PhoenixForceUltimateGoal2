@@ -22,9 +22,9 @@ public class FieldPositions {
     public final static Pose2d R1 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
     public final static Pose2d R2 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
     public final static Pose2d R3 = new Pose2d(0, 0, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
-    public final static Pose2d R4A = new Pose2d(-8, -37, Math.toRadians(-175)); //---
-    public final static Pose2d R4B = new Pose2d(-20, -37, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
-    public final static Pose2d R4C = new Pose2d(-27, -37, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4A = new Pose2d(-8, -36, Math.toRadians(-175)); //---
+    public final static Pose2d R4B = new Pose2d(-20, -36, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4C = new Pose2d(-27, -36, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
 
     //--- Transition positions
     public final static Pose2d X0 = new Pose2d(0, 0, SetFacing(Facing.GOAL));                   //--- center of the arena
@@ -32,9 +32,10 @@ public class FieldPositions {
     public final static Pose2d X2 = new Pose2d(0, 0, SetFacing(Facing.GOAL));                   //---
     public final static Pose2d X3 = new Pose2d(45, 0, SetFacing(Facing.GOAL));                  //---X center of close to target zone
     public final static Pose2d X3R = new Pose2d(45, 0, SetFacing(Facing.BACK_ROTATE_RIGHT));    //---X center of close to target zone (reversed)
-
     public final static Pose2d X4 = new Pose2d(30, -15, SetFacing(Facing.BACK_ROTATE_RIGHT));   //---X center of close to target zone (reversed)
     public final static Pose2d X5R = new Pose2d(67, 0, SetFacing(Facing.BACK_ROTATE_RIGHT));     //---X far back center
+    public final static Pose2d X6A = new Pose2d(35, -64, SetFacing(Facing.RIGHT));               //---X middle of out red zones
+    public final static Pose2d X6B = new Pose2d(23, -64, SetFacing(Facing.RIGHT));               //---X middle of out red zones, parking on line with extender
 
     //--- White line positions
     public final static Pose2d L0 = new Pose2d(10, 0, SetFacing(Facing.GOAL));                  //---X center on white line
@@ -55,9 +56,12 @@ public class FieldPositions {
     public final static Pose2d W6 = new Pose2d(0, 0, SetFacing(Facing.GOAL));   //---
 
     //--- Wobble goal target positions (outside missions)
-    public final static Pose2d W4O = new Pose2d(30, -61, SetFacing(Facing.LEFT));      //---X red A
+    public final static Pose2d W4O = new Pose2d(30, -64, SetFacing(Facing.LEFT));      //---X red A - towards goal
+    public final static Pose2d W4OB = new Pose2d(20, -64, SetFacing(Facing.LEFT));      //---X red A - towards front
     public final static Pose2d W5O = new Pose2d(52, -45, SetFacing(Facing.LEFT));       //---X red B
+    public final static Pose2d W5OB = new Pose2d(35, -55, SetFacing(Facing.GOAL));       //---X red B
     public final static Pose2d W6O = new Pose2d(48, -59, SetFacing(Facing.RIGHT));      //---X red C
+    public final static Pose2d W6OB = new Pose2d(44, -63, SetFacing(Facing.RIGHT));      //---X red C
     public final static Pose2d W6O_2 = new Pose2d(44, -63, SetFacing(Facing.RIGHT));    //---X red C (2nd wobble)
 
     //--- Wobble goal target positions (inside missions)
@@ -91,7 +95,7 @@ public class FieldPositions {
     public final static Pose2d T2 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static Pose2d T3 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static Pose2d T4 = new Pose2d(-4, -26, SetFacing(Facing.GOAL));    //---XX red center front line
-    public final static Pose2d T5 = new Pose2d(-4, -61, Math.toRadians(23));        //---X red outside front line
+    public final static Pose2d T5 = new Pose2d(-4, -61, Math.toRadians(20));        //---X red outside front line
     public final static Pose2d T6 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static Pose2d T7 = new Pose2d(-4, -16, Math.toRadians(-6));        //---X red inside front line
 
@@ -106,7 +110,7 @@ public class FieldPositions {
     public final static double P4A[] = { 9, 8 };
     public final static Pose2d P5 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //--- blue outside power show
     public final static double P5A[] = { 8, 8 };
-    public final static Pose2d P6 = new Pose2d(-4, -61, Math.toRadians(33));        //---X red outside power shot
+    public final static Pose2d P6 = new Pose2d(-4, -61, Math.toRadians(31));        //---X red outside power shot
     public final static double P6A[] = { 5, 8 };
 
     private enum Facing
