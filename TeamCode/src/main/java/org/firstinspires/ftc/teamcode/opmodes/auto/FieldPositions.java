@@ -9,22 +9,22 @@ public class FieldPositions {
     public final static Pose2d S1 = new Pose2d(-63.5, 52, SetFacing(Facing.GOAL));      //---X blue outside
     public final static Pose2d S2 = new Pose2d(-63.5, 11, SetFacing(Facing.GOAL));      //---X blue inside
     public final static Pose2d S3 = new Pose2d(-63.5, -16, SetFacing(Facing.GOAL));     //---X red inside
-    public final static Pose2d S4 = new Pose2d(-63.5, -61, SetFacing(Facing.GOAL));     //---X red outside
+    public final static Pose2d S4 = new Pose2d(-63.5, -60, SetFacing(Facing.GOAL));     //---X red outside
     public final static Pose2d S5 = new Pose2d(-63.5, 0, SetFacing(Facing.GOAL));       //---X against wall, center
 
     //--- Wobble goal positions
     public final static Pose2d S1W = new Pose2d(-60, 53, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, left blue
     public final static Pose2d S2W = new Pose2d(-60, 11, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, right blue
     public final static Pose2d S3W = new Pose2d(-60, -16, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, left red
-    public final static Pose2d S4W = new Pose2d(-60, -61, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, right red
+    public final static Pose2d S4W = new Pose2d(-60, -60, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, right red
 
     //--- Ring pickup positions
     public final static Pose2d R1 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
     public final static Pose2d R2 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
     public final static Pose2d R3 = new Pose2d(0, 0, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
-    public final static Pose2d R4A = new Pose2d(-10, -35, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
-    public final static Pose2d R4B = new Pose2d(-20, -35, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
-    public final static Pose2d R4C = new Pose2d(-35, -35, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4A = new Pose2d(-8, -37, Math.toRadians(-175)); //---
+    public final static Pose2d R4B = new Pose2d(-20, -37, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
+    public final static Pose2d R4C = new Pose2d(-27, -37, SetFacing(Facing.BACK_ROTATE_RIGHT)); //---
 
     //--- Transition positions
     public final static Pose2d X0 = new Pose2d(0, 0, SetFacing(Facing.GOAL));                   //--- center of the arena
@@ -33,7 +33,8 @@ public class FieldPositions {
     public final static Pose2d X3 = new Pose2d(45, 0, SetFacing(Facing.GOAL));                  //---X center of close to target zone
     public final static Pose2d X3R = new Pose2d(45, 0, SetFacing(Facing.BACK_ROTATE_RIGHT));    //---X center of close to target zone (reversed)
 
-    public final static Pose2d X4 = new Pose2d(30, -15, SetFacing(Facing.BACK_ROTATE_RIGHT));    //---X center of close to target zone (reversed)
+    public final static Pose2d X4 = new Pose2d(30, -15, SetFacing(Facing.BACK_ROTATE_RIGHT));   //---X center of close to target zone (reversed)
+    public final static Pose2d X5R = new Pose2d(67, 0, SetFacing(Facing.BACK_ROTATE_RIGHT));     //---X far back center
 
     //--- White line positions
     public final static Pose2d L0 = new Pose2d(10, 0, SetFacing(Facing.GOAL));                  //---X center on white line
@@ -54,15 +55,15 @@ public class FieldPositions {
     public final static Pose2d W6 = new Pose2d(0, 0, SetFacing(Facing.GOAL));   //---
 
     //--- Wobble goal target positions (outside missions)
-    public final static Pose2d W4O = new Pose2d(30, -61, SetFacing(Facing.RIGHT));      //---X red A
+    public final static Pose2d W4O = new Pose2d(30, -61, SetFacing(Facing.LEFT));      //---X red A
     public final static Pose2d W5O = new Pose2d(52, -45, SetFacing(Facing.LEFT));       //---X red B
     public final static Pose2d W6O = new Pose2d(48, -59, SetFacing(Facing.RIGHT));      //---X red C
     public final static Pose2d W6O_2 = new Pose2d(44, -63, SetFacing(Facing.RIGHT));    //---X red C (2nd wobble)
 
     //--- Wobble goal target positions (inside missions)
     public final static Pose2d W4I = new Pose2d(27, -61, SetFacing(Facing.LEFT));       //---XX red A
-    public final static Pose2d W5I = new Pose2d(52, -42, SetFacing(Facing.LEFT));       //---XX red B
-    public final static Pose2d W6I = new Pose2d(58, -45, SetFacing(Facing.BACK_ROTATE_LEFT));      //---XX red C
+    public final static Pose2d W5I = new Pose2d(35, -23, SetFacing(Facing.BACK_ROTATE_LEFT));       //---XX red B
+    public final static Pose2d W6I = new Pose2d(58, -48, SetFacing(Facing.BACK_ROTATE_LEFT));      //---XX red C
 //    public final static Pose2d W6I_2 = new Pose2d(44, -63, SetFacing(Facing.RIGHT));    //---X red C (2nd wobble)
 
     //--- Special path back from R OUT - Zone C to grab wobble goal

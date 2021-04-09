@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -12,6 +13,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
+@Disabled
 @Autonomous(group = "auto")
 public class R_OUT_PS_WGx2_L extends AbstractAuto {
     public void runOpMode() {
@@ -85,10 +87,10 @@ public class R_OUT_PS_WGx2_L extends AbstractAuto {
                 drive.line(FieldPositions.S3G_4); break;
         }
 
-        //--- Return to start
-        sleep(5000);
-        drive.setSpeed(MecanumAutonomous.Speed.MEDIUM);
-        drive.line(FieldPositions.S4);
-        appendages.wobbleGoalDrop();
+//        //--- Return to start
+//        sleep(5000);
+//        drive.setSpeed(MecanumAutonomous.Speed.MEDIUM);
+//        drive.line(FieldPositions.S4);
+//        appendages.wobbleGoalDrop();
     }
 }

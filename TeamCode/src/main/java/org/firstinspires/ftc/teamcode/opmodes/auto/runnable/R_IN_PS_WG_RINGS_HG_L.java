@@ -12,7 +12,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 @Autonomous(group = "auto")
-public class R_IN_PS_RINGS_HG_L extends AbstractAuto {
+public class R_IN_PS_WG_RINGS_HG_L extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.INSIDE);
 

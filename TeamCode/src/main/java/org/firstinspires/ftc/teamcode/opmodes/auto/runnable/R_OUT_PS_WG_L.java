@@ -53,10 +53,10 @@ public class R_OUT_PS_WG_L extends AbstractAuto {
         //TODO: wait until 5 seconds left
         drive.line(FieldPositions.L2R);
 
-        //--- Return to start
-        sleep(5000);
-        drive.setSpeed(MecanumAutonomous.Speed.MEDIUM);
-        drive.line(FieldPositions.S4);
-        appendages.wobbleGoalDrop();
+//        //--- Return to start
+//        sleep(5000);
+//        drive.setSpeed(MecanumAutonomous.Speed.MEDIUM);
+//        drive.line(FieldPositions.S4);
+//        appendages.wobbleGoalDrop();
     }
 }
