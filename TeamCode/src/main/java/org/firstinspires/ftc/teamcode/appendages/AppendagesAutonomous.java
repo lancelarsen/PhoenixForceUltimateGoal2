@@ -19,6 +19,24 @@ public class AppendagesAutonomous extends BotAppendages {
         setReachArmPosition(ReachArmPosition.RETRACTED);
     }
 
+    public void ringIntakeStart() {
+        setIntakeDirection(Direction.FORWARD);
+        enableElevator(true);
+        enableIntake(true);
+    }
+
+    public void ringIntakeReverseStart() {
+        setIntakeDirection(Direction.REVERSE);
+        enableElevator(true);
+        enableIntake(true);
+    }
+
+    public void ringIntakeStop() {
+        setIntakeDirection(Direction.FORWARD);
+        enableElevator(false);
+        enableIntake(false);
+    }
+
     public void wobbleGoalGrab() {
         wobbleGoalGrab(GoalLifterPosition.MIDDLE);
     }

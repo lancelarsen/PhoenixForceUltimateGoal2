@@ -59,9 +59,9 @@ public class TeleOp {
     private boolean hasLocalizedRobot = false;
     private int autoPowershotsShot = 0;
 
-    private final static Pose2d BLUE_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, -61, Math.toRadians(0));
+    private final static Pose2d BLUE_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, 54, Math.toRadians(0));
     private final static Pose2d BLUE_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, 11, Math.toRadians(0));
-    private final static Pose2d RED_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, -61, Math.toRadians(0));
+    private final static Pose2d RED_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, -59, Math.toRadians(0));
     private final static Pose2d RED_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, -11, Math.toRadians(0));
 
     private final static long AUTO_POWERSHOT_SHOOT_DELAY = 1000;

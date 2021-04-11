@@ -9,9 +9,9 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 @Autonomous(group = "auto")
-public class R_OUT_HG_WG_L extends AbstractAuto {
+public class B_OUT_HG_WG_L extends AbstractAuto {
     public void runOpMode() {
-        initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
+        initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
 
         //--- Detect number of rings
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
@@ -19,47 +19,48 @@ public class R_OUT_HG_WG_L extends AbstractAuto {
         appendages.ringIntakeStart();
 
         //--- Grab wobble goal
-        drive.line(FieldPositions.S4W);
+        drive.line(FieldPositions.S1W);
         appendages.wobbleGoalGrab();
 
-        //--- delays
+     //   //--- delays
         switch (targetZone) {
             case ZONE_A:
                 break;
             case ZONE_B:
             case ZONE_C:
-                sleep(10000); break;
+                // sleep(10000);
+                break;
         }
 
         //--- Shoot top goal
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-        drive.curve(FieldPositions.T5);
+        drive.curve(FieldPositions.T2);
         appendages.shootRings();
         appendages.shooterOff();
 
         //--- Drop wobble goal
         switch (targetZone) {
-            case ZONE_A:
-                drive.line(FieldPositions.W4OB); break;
+           case ZONE_A:
+                drive.line(FieldPositions.W1); break;
             case ZONE_B:
-                drive.line(FieldPositions.W5OB); break;
+                drive.line(FieldPositions.W2); break;
             case ZONE_C:
-                drive.line(FieldPositions.W6OB); break;
+                drive.line(FieldPositions.W3); break;
         }
         appendages.wobbleGoalDrop();
 
         //--- Park on line
-        switch (targetZone) {
+       switch (targetZone) {
             case ZONE_A:
-                drive.line(FieldPositions.X6A);
+                drive.line(FieldPositions.BX6);
                 sleep(10000);
                 break;
             case ZONE_B:
             case ZONE_C:
-                drive.line(FieldPositions.X6B);
+                drive.line(FieldPositions.BL1);
                 break;
         }
-    //    drive.line(FieldPositions.X6B);
+ //       drive.line(FieldPositions.BL1);
         appendages.setReachArmPosition(BotAppendages.ReachArmPosition.EXTENDED);
     }
 }

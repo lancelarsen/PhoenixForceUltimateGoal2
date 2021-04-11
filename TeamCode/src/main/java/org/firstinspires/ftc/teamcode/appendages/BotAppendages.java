@@ -28,7 +28,7 @@ public class BotAppendages {
     public final static double MAX_SHOOTER_TILTER_ANGLE = 0.0;
     public final static double SHOOTER_TILTER_SHOOTING_ANGLE = 0.5;
     public final static double SHOOTER_TILTER_LOADING_ANGLE = 0.4;
-    public final static double EXTENDED_SHOOTER_ARM_ANGLE = 0.5;
+    public final static double EXTENDED_SHOOTER_ARM_ANGLE = 0.7;
     public final static double RETRACTED_SHOOTER_ARM_ANGLE = 0.3;
     public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1750;
     public final static double RING_SHOOTER_WHEEL_SPEED_POWER_SHOTS = 1500;
@@ -208,30 +208,9 @@ public class BotAppendages {
         return ringDistanceMovingAverage.getMean() > ELEVATOR_NO_RING_DISTANCE_THRESH;
     }
 
-    public void ringIntakeStart() {
-        setIntakeDirection(Direction.FORWARD);
-        enableElevator(true);
-        enableIntake(true);
-        runIntake();
-    }
-
-    public void ringIntakeReverseStart() {
-        setIntakeDirection(Direction.REVERSE);
-        enableElevator(true);
-        enableIntake(true);
-        runIntake();
-    }
-
-    public void ringIntakeStop() {
-        setIntakeDirection(Direction.FORWARD);
-        enableElevator(false);
-        enableIntake(false);
-        runIntake();
-    }
-
     public void enableElevator(boolean enabled) {
         elevatorEnabled = enabled;
-        //runIntake();
+        runIntake();
     }
 
     public void enableIntake(boolean enabled) {
@@ -299,9 +278,7 @@ public class BotAppendages {
                     Thread.sleep(400);
                     goalLock.setPosition(CLOSED_GOAL_LOCK_ANGLE);
                 }
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-            }
+            } catch (InterruptedException e) {}
         };
 
         goalLockThread = new Thread(openTask);

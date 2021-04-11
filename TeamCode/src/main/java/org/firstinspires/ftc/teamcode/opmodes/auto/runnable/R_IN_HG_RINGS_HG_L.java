@@ -20,6 +20,8 @@ public class R_IN_HG_RINGS_HG_L extends AbstractAuto {
         //--- Detect number of rings
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
+        appendages.ringIntakeStart();
+
         //--- Grab wobble goal
         drive.line(FieldPositions.S3W);
         appendages.wobbleGoalGrab();
