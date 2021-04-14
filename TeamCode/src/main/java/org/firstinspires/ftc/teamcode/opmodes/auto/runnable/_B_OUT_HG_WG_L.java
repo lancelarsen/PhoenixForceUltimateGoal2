@@ -9,7 +9,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 @Autonomous(group = "auto")
-public class B_OUT_HG_WG_L extends AbstractAuto {
+public class _B_OUT_HG_WG_L extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.BLUE, AutoUtils.StartingPosition.OUTSIDE);
 
@@ -19,33 +19,33 @@ public class B_OUT_HG_WG_L extends AbstractAuto {
         appendages.ringIntakeStart();
 
         //--- Grab wobble goal
-        drive.line(FieldPositions.S1W);
+        drive.line(FieldPositions.BSO_W);
         appendages.wobbleGoalGrab();
 
-     //   //--- delays
+        //--- delays
         switch (targetZone) {
             case ZONE_A:
                 break;
             case ZONE_B:
             case ZONE_C:
-                // sleep(10000);
+                sleep(10000);
                 break;
         }
 
         //--- Shoot top goal
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-        drive.curve(FieldPositions.T2);
+        drive.curve(FieldPositions.BTO2);
         appendages.shootRings();
         appendages.shooterOff();
 
         //--- Drop wobble goal
         switch (targetZone) {
            case ZONE_A:
-                drive.line(FieldPositions.W1); break;
+                drive.line(FieldPositions.BO_WA); break;
             case ZONE_B:
-                drive.line(FieldPositions.W2); break;
+                drive.line(FieldPositions.BO_WB); break;
             case ZONE_C:
-                drive.line(FieldPositions.W3); break;
+                drive.line(FieldPositions.BO_WC); break;
         }
         appendages.wobbleGoalDrop();
 
@@ -57,9 +57,10 @@ public class B_OUT_HG_WG_L extends AbstractAuto {
                 break;
             case ZONE_B:
             case ZONE_C:
-                drive.line(FieldPositions.BL1);
+                drive.line(FieldPositions.BLO);
                 break;
         }
+        //TODO: What should we do about parking for A?
  //       drive.line(FieldPositions.BL1);
         appendages.setReachArmPosition(BotAppendages.ReachArmPosition.EXTENDED);
     }

@@ -18,7 +18,7 @@ public class B_IN_L extends AbstractAuto {
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
         //--- Grab wobble goal
-        drive.line(FieldPositions.S2W);
+        drive.line(FieldPositions.BSI_W);
         appendages.wobbleGoalGrab();
 
         //--- Wait for 20 seconds

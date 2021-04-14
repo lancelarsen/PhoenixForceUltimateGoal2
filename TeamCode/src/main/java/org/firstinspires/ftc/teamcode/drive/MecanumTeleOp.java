@@ -40,6 +40,8 @@ public class MecanumTeleOp extends BotMecanumDrive {
             speedMultiplier = FAST_SPEED_MULTIPLIER;
         } else if (opMode.gamepad1.b) {
             speedMultiplier = SLOW_SPEED_MULTIPLIER;
+        } else if (opMode.gamepad1.x) {
+            speedMultiplier = SUPER_SLOW_SPEED_MULTIPLIER;
         }
 
         Pose2d drivePower = new Pose2d();

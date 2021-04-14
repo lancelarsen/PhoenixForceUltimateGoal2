@@ -2,10 +2,8 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
-import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
@@ -21,7 +19,7 @@ public class R_IN_PS_L extends AbstractAuto {
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
         //--- Grab wobble goal
-        drive.line(FieldPositions.S3W);
+        drive.line(FieldPositions.RSI_W);
         appendages.wobbleGoalGrab();
 
         //--- Shoot power shots
@@ -40,14 +38,14 @@ public class R_IN_PS_L extends AbstractAuto {
         //--- Drop wobble goal
         switch (targetZone) {
             case ZONE_A:
-                drive.line(FieldPositions.X4);
+                drive.line(FieldPositions.RX2);
                 sleep(10000);
-                drive.line(FieldPositions.W4I);
+                drive.line(FieldPositions.RI_WA);
                 break;
             case ZONE_B:
-                drive.line(FieldPositions.W5I); break;
+                drive.line(FieldPositions.RI_WB); break;
             case ZONE_C:
-                drive.line(FieldPositions.W6I); break;
+                drive.line(FieldPositions.RI_WC); break;
         }
         appendages.wobbleGoalDrop();
 

@@ -206,7 +206,7 @@ public class RedInside1 extends LinearOpMode {
         //----------------------------------------------------------------------
         //--- pick up wobble
         //----------------------------------------------------------------------
-        DriveStraight(FieldPositions.S3W, Speed.Fast); //--- drive away from wall
+        DriveStraight(FieldPositions.RSI_W, Speed.Fast); //--- drive away from wall
         sleep(2000);
 
         //----------------------------------------------------------------------
@@ -263,7 +263,7 @@ public class RedInside1 extends LinearOpMode {
         //--- drive back to starting position
         //----------------------------------------------------------------------
         sleep(2000);
-        DriveStraight(FieldPositions.S3W, Speed.Medium);
+        DriveStraight(FieldPositions.RSI_W, Speed.Medium);
         //DriveCurve(FieldPositions.S3W, Speed.Slow, 0, DriveDirection.Backwards);
         DriveAlignBackOnWall();
     }

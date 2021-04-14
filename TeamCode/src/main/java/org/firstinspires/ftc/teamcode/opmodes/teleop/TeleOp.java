@@ -4,6 +4,7 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
 import org.firstinspires.ftc.teamcode.appendages.AppendagesTeleOp;
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
@@ -71,6 +72,7 @@ public class TeleOp {
     private final static long AUTO_POWERSHOT_MOVE_DELAY = 1000;
 
     public MecanumAutonomous drive;
+    private volatile AppendagesAutonomous appendages2;
 
     public TeleOp(LinearOpMode opMode, AutoUtils.Alliance alliance) {
         this.opMode = opMode;
@@ -81,6 +83,7 @@ public class TeleOp {
         driverGamepad = new GamepadUtils(opMode.gamepad1);
 
         drive = new MecanumAutonomous(opMode);
+        appendages2 = new AppendagesAutonomous(opMode);
     }
 
     public void run() {
@@ -89,7 +92,7 @@ public class TeleOp {
         appendages.commandShooter();
         appendages.commandGoalGrabber();
 
-        //commandPowershotShooting();
+        commandPowershotShooting();
         teleopShootHighGoalFromSides();
         teleopShootPowerShotsFromSides();
 
@@ -101,16 +104,16 @@ public class TeleOp {
         if (opMode.gamepad2.right_trigger > TRIGGER_PRESSED_THRESH) {
             switch (alliance) {
                 case RED:
-                    drive.setCurrentPosition(FieldPositions.RSA);
+                    drive.setCurrentPosition(FieldPositions.RL2);
                     appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-                    drive.line(FieldPositions.RSB);
+                    drive.line(FieldPositions.RTO);
                     sleep(1000);
                     appendages.shootRings();
                     break;
                 case BLUE:
-                    drive.setCurrentPosition(FieldPositions.BSA);
+                    drive.setCurrentPosition(FieldPositions.BL2);
                     appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-                    drive.line(FieldPositions.BSB);
+                    drive.line(FieldPositions.BTO);
                     sleep(1000);
                     appendages.shootRings();
                     break;
@@ -122,27 +125,27 @@ public class TeleOp {
         if (opMode.gamepad2.left_trigger > TRIGGER_PRESSED_THRESH) {
             switch (alliance) {
                 case RED:
-                    drive.setCurrentPosition(FieldPositions.RSA);
-                    shootPowershotsFromSide(FieldPositions.P6, FieldPositions.P6A);
+                    appendages2.ringIntakeStop();
+                    drive.setCurrentPosition(FieldPositions.RL2);
+                    shootPowershotsFromSide(FieldPositions.RTO_TELE_PS, FieldPositions.RTO_TELE_PSA);
+                    appendages2.ringIntakeStart();
                     break;
                 case BLUE:
-                    drive.setCurrentPosition(FieldPositions.BSA);
+                    drive.setCurrentPosition(FieldPositions.BL2);
                     shootPowershotsFromSide(FieldPositions.P5, FieldPositions.P5A);
                     break;
             }
         }
     }
 
-    private void shootPowershotsFromSide(Pose2d shootingPose, double turnAngles[]) {
+     private void shootPowershotsFromSide(Pose2d shootingPose, double turnAngles[]) {
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
+        sleep(2000);
         drive.line(shootingPose);
         for (int i = 0; i < 3; i++) {
             appendages.shootRings(1);
-            sleep(500);
-
             if (i == 2) break;
             drive.turnLeft(turnAngles[i]);
-            sleep(500);
         }
     }
 

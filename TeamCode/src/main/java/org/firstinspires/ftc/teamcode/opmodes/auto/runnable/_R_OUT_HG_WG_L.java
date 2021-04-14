@@ -9,18 +9,22 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
 @Autonomous(group = "auto")
-public class R_OUT_HG_WG_L extends AbstractAuto {
+public class _R_OUT_HG_WG_L extends AbstractAuto {
     public void runOpMode() {
         initAuto(AutoUtils.Alliance.RED, AutoUtils.StartingPosition.OUTSIDE);
 
         //--- Detect number of rings
         RingVision.TargetZone targetZone = ringVision.getTargetZone();
 
+        //--- Start intake to deploy collector
         appendages.ringIntakeStart();
 
         //--- Grab wobble goal
-        drive.line(FieldPositions.S4W);
+        drive.line(FieldPositions.RSO_W);
         appendages.wobbleGoalGrab();
+
+        //--- Stop intake
+        appendages.ringIntakeStop();
 
         //--- delays
         switch (targetZone) {
@@ -28,38 +32,40 @@ public class R_OUT_HG_WG_L extends AbstractAuto {
                 break;
             case ZONE_B:
             case ZONE_C:
-                sleep(10000); break;
+                sleep(10000);
+                break;
         }
 
         //--- Shoot top goal
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-        drive.curve(FieldPositions.T5);
+        drive.curve(FieldPositions.RTO2);
         appendages.shootRings();
         appendages.shooterOff();
 
         //--- Drop wobble goal
         switch (targetZone) {
             case ZONE_A:
-                drive.line(FieldPositions.W4OB); break;
+                drive.line(FieldPositions.RO_WA); break;
             case ZONE_B:
-                drive.line(FieldPositions.W5OB); break;
+                drive.line(FieldPositions.RO_WB); break;
             case ZONE_C:
-                drive.line(FieldPositions.W6OB); break;
+                drive.line(FieldPositions.RO_WC); break;
         }
         appendages.wobbleGoalDrop();
 
         //--- Park on line
         switch (targetZone) {
             case ZONE_A:
-                drive.line(FieldPositions.X6A);
+                drive.line(FieldPositions.RX6);
                 sleep(10000);
                 break;
             case ZONE_B:
             case ZONE_C:
-                drive.line(FieldPositions.X6B);
+                drive.line(FieldPositions.RLO);
                 break;
         }
-    //    drive.line(FieldPositions.X6B);
+        //TODO: What should we do about parking for A?
+    //    drive.line(FieldPositions.RLO);
         appendages.setReachArmPosition(BotAppendages.ReachArmPosition.EXTENDED);
     }
 }

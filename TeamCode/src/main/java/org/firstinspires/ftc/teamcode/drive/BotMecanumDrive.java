@@ -71,6 +71,7 @@ public class BotMecanumDrive extends MecanumDrive {
 
     public final static double FAST_SPEED_MULTIPLIER = 1.0;
     public final static double SLOW_SPEED_MULTIPLIER = 0.5;
+    public final static double SUPER_SLOW_SPEED_MULTIPLIER = 0.2;
 
     public enum Mode {
         IDLE,

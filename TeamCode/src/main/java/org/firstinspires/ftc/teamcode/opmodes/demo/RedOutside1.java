@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.opmodes.demo;
 import com.acmerobotics.roadrunner.geometry.Pose2d;
 import com.acmerobotics.roadrunner.geometry.Vector2d;
 import com.acmerobotics.roadrunner.trajectory.Trajectory;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,7 +11,6 @@ import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
 import org.firstinspires.ftc.teamcode.drive.BotMecanumDrive;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
-import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 
 @Disabled
 @TeleOp(name = "DEMO Red->Outside 1", group = "Auto")
@@ -114,7 +112,7 @@ public class RedOutside1 extends LinearOpMode {
         waitForStart();
         if (isStopRequested()) return;
 
-        DriveStraight(FieldPositions.S4W, Speed.Fast); //--- drive away from wall
+        DriveStraight(FieldPositions.RSO_W, Speed.Fast); //--- drive away from wall
         sleep(2000);
         DriveCurve(FieldPositions.L0, Speed.Fast); //--- drive to middle of the white line
 
