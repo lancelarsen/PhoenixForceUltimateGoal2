@@ -30,7 +30,7 @@ public class BotAppendages {
     public final static double SHOOTER_TILTER_LOADING_ANGLE = 0.4;
     public final static double EXTENDED_SHOOTER_ARM_ANGLE = 0.7;
     public final static double RETRACTED_SHOOTER_ARM_ANGLE = 0.3;
-    public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1750;
+    public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1800; //1750
     public final static double RING_SHOOTER_WHEEL_SPEED_POWER_SHOTS = 1500;
 
     private final static long SHOOTER_ARM_EXTEND_DELAY = 400;
@@ -116,7 +116,6 @@ public class BotAppendages {
         shooterArm = hardwareMap.get(Servo.class, "shooterArm");
         shooterWheel = hardwareMap.get(DcMotorEx.class, "shooterWheel");
         shooterWheel.setMode(DcMotorEx.RunMode.RUN_USING_ENCODER);
-        //shooterWheel.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         shooterWheel.setDirection(DcMotorEx.Direction.REVERSE);
 
         ringDetector = hardwareMap.get(NormalizedColorSensor.class, "ringDetector");
@@ -180,6 +179,11 @@ public class BotAppendages {
         }
     }
 
+    public void setShooterSpeed(double speed) {
+        setReachArmPosition(ReachArmPosition.SHOOTER_CLEARED);
+        shooterWheel.setVelocity(speed);
+    }
+
     public void shootRings() {
         shootRings(3);
     }
@@ -188,7 +192,6 @@ public class BotAppendages {
         for (int i = 0; i < num; i++) {
             extendShooterArm(true);
             sleep(SHOOTER_ARM_EXTEND_DELAY);
-            if (i==0) sleep(100);   //--- Give first shot a bit longer to engage with weight of other two rings on top
             extendShooterArm(false);
             sleep(SHOOTER_ARM_RETRACT_DELAY);
         }

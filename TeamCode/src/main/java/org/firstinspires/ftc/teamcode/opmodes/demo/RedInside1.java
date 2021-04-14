@@ -198,7 +198,7 @@ public class RedInside1 extends LinearOpMode {
         _ringVision  = new RingVision(_opMode.hardwareMap);
         _drive = new BotMecanumDrive(hardwareMap);
 
-        SetStartPosition(FieldPositions.S3);
+        SetStartPosition(FieldPositions.RSI);
 
         waitForStart();
         if (isStopRequested()) return;

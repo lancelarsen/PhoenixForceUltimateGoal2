@@ -58,7 +58,7 @@ public class R_OUT_HG_L extends AbstractAuto {
         //--- Return to start
         sleep(5000);
         drive.setSpeed(MecanumAutonomous.Speed.MEDIUM);
-        drive.line(FieldPositions.S4);
+        drive.line(FieldPositions.RSO);
         appendages.wobbleGoalDrop();
     }
 }

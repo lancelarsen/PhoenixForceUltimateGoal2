@@ -33,19 +33,17 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         if (alliance == AutoUtils.Alliance.BLUE) {
             if (startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
-                drive.setCurrentPosition(FieldPositions.S1);
+                drive.setCurrentPosition(FieldPositions.BSO);
             } else {
-                drive.setCurrentPosition(FieldPositions.S2);
+                drive.setCurrentPosition(FieldPositions.BSI);
             }
-
             updateLights(BlinkinPatterns.BLUE_BASE_PATTERN);
         } else {
-            if (startingPosition == AutoUtils.StartingPosition.INSIDE) {
-                drive.setCurrentPosition(FieldPositions.S3);
+            if (startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
+                drive.setCurrentPosition(FieldPositions.RSO);
             } else {
-                drive.setCurrentPosition(FieldPositions.S4);
+                drive.setCurrentPosition(FieldPositions.RSI);
             }
-
             updateLights(BlinkinPatterns.RED_BASE_PATTERN);
         }
 

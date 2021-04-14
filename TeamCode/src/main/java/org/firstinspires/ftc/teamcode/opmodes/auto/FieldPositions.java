@@ -4,19 +4,30 @@ import com.acmerobotics.roadrunner.geometry.Pose2d;
 
 public class FieldPositions {
 
-    //--- Starting positions
-    public final static Pose2d S0 = new Pose2d(0, 0, SetFacing(Facing.GOAL));           //---X center of arena
-    public final static Pose2d S1 = new Pose2d(-63.5, 52, SetFacing(Facing.GOAL));      //---X blue outside
-    public final static Pose2d S2 = new Pose2d(-63.5, 11, SetFacing(Facing.GOAL));      //---X blue inside
-    public final static Pose2d S3 = new Pose2d(-63.5, -16, SetFacing(Facing.GOAL));     //---X red inside
-    public final static Pose2d S4 = new Pose2d(-63.5, -60, SetFacing(Facing.GOAL));     //---X red outside
-    public final static Pose2d S5 = new Pose2d(-63.5, 0, SetFacing(Facing.GOAL));       //---X against wall, center
+    //--- Starting positions (red)
+    public final static Pose2d BSO = new Pose2d(-63.5, 52, SetFacing(Facing.GOAL));      //---X blue outside
+    public final static Pose2d BSI = new Pose2d(-63.5, 11, SetFacing(Facing.GOAL));      //---X blue inside
+
+    //--- Starting positions (blue)
+    public final static Pose2d RSO = new Pose2d(-63.5, -60, SetFacing(Facing.GOAL));     //---X red outside
+    public final static Pose2d RSI = new Pose2d(-63.5, -16, SetFacing(Facing.GOAL));     //---X red inside
+
+    //--- Starting positions (neutral)
+    public final static Pose2d NS0 = new Pose2d(0, 0, SetFacing(Facing.GOAL));           //---X center of arena
+    public final static Pose2d NS1 = new Pose2d(-63.5, 0, SetFacing(Facing.GOAL));       //---X against wall, center
 
     //--- Wobble goal positions
     public final static Pose2d S1W = new Pose2d(-60, 53, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, left blue
     public final static Pose2d S2W = new Pose2d(-60, 11, SetFacing(Facing.GOAL));       //---X 2 inches away from wall, right blue
     public final static Pose2d S3W = new Pose2d(-60, -16, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, left red
     public final static Pose2d S4W = new Pose2d(-60, -60, SetFacing(Facing.GOAL));      //---X 2 inches away from wall, right red
+
+
+    //--- Power shots from sides
+    public final static Pose2d RSA = new Pose2d(-4, -63, SetFacing(Facing.GOAL));       //---X against wall, behind white line
+    public final static Pose2d RSB = new Pose2d(-5, -58, Math.toRadians(30));           //---X high goal
+    public final static Pose2d BSA = new Pose2d(-4, 63, SetFacing(Facing.GOAL));        //--- against wall, behind white line
+    public final static Pose2d BSB = new Pose2d(-5, 58, Math.toRadians(-30));            //--- high goal
 
     //--- Ring pickup positions
     public final static Pose2d R1 = new Pose2d(0, 0, SetFacing(Facing.GOAL)); //---
@@ -110,16 +121,19 @@ public class FieldPositions {
     //--- Power shot positions
     public final static Pose2d P1 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static double P1A[] = { -8, -8 };
-    public final static Pose2d P2 = new Pose2d(-4, 6, Math.toRadians(2));       //---
+    public final static Pose2d P2 = new Pose2d(-4, 6, Math.toRadians(2));           //---
     public final static double P2A[] = { 10, 8 };
     public final static Pose2d P3 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //---
     public final static double P3A[] = { 8, 8 };
-    public final static Pose2d P4 = new Pose2d(-4, -10, Math.toRadians(-1));    //---X red inside power show
+    public final static Pose2d P4 = new Pose2d(-4, -10, Math.toRadians(-1));        //---X red inside power show
     public final static double P4A[] = { 9, 8 };
-    public final static Pose2d P5 = new Pose2d(0, 0, SetFacing(Facing.GOAL));       //--- blue outside power show
-    public final static double P5A[] = { 8, 8 };
+    public final static Pose2d P5 = new Pose2d(-4, 61, Math.toRadians(-31));       //--- blue outside power show
+    public final static double P5A[] = { 5, 8 };
     public final static Pose2d P6 = new Pose2d(-4, -61, Math.toRadians(31));        //---X red outside power shot
     public final static double P6A[] = { 5, 8 };
+
+    public final static Pose2d RP1 = new Pose2d(-5, -58, Math.toRadians(41));        //---X red outside power shot
+    public final static double RP1A[] = { 8, 8 };
 
     private enum Facing
     {

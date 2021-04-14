@@ -109,7 +109,7 @@ public class RedOutside1 extends LinearOpMode {
         _ringVision  = new RingVision(_opMode.hardwareMap);
         _drive = new BotMecanumDrive(hardwareMap);
 
-        SetStartPosition(FieldPositions.S4);
+        SetStartPosition(FieldPositions.RSO);
 
         waitForStart();
         if (isStopRequested()) return;

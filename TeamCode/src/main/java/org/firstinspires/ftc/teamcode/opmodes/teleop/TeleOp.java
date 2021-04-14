@@ -12,6 +12,9 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
 
+import static org.firstinspires.ftc.teamcode.appendages.BotAppendages.TRIGGER_PRESSED_THRESH;
+import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
+
 //----------------------------------------------------------------------
 // Gamepad 1
 //  - Left Stick            - Arcade Drive Movement
@@ -37,8 +40,8 @@ import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
 //  - Dpad Right            -
 //  - Dpad Left             -
 //  - Left Bumper           -
-//  - Left Trigger          -
-//  - Right Bumper          -
+//  - Left Trigger          - teleop-auto: shoot power shots
+//  - Right Bumper          - teleop-auto: shoot high goal
 //  - Right Trigger         -
 //  - X                     - Shoot a Ring!
 //  - B                     - Turn Ring Intake On/Off While Lifter Up
@@ -67,15 +70,17 @@ public class TeleOp {
     private final static long AUTO_POWERSHOT_SHOOT_DELAY = 1000;
     private final static long AUTO_POWERSHOT_MOVE_DELAY = 1000;
 
+    public MecanumAutonomous drive;
+
     public TeleOp(LinearOpMode opMode, AutoUtils.Alliance alliance) {
         this.opMode = opMode;
         this.alliance = alliance;
 
         appendages = new AppendagesTeleOp(opMode);
-
         mecanum = new MecanumTeleOp(opMode);
-
         driverGamepad = new GamepadUtils(opMode.gamepad1);
+
+        drive = new MecanumAutonomous(opMode);
     }
 
     public void run() {
@@ -84,10 +89,61 @@ public class TeleOp {
         appendages.commandShooter();
         appendages.commandGoalGrabber();
 
-        commandPowershotShooting();
+        //commandPowershotShooting();
+        teleopShootHighGoalFromSides();
+        teleopShootPowerShotsFromSides();
 
         mecanum.enableTurning(!appendages.isAdjGoalLifterPosition());
         mecanum.arcadeDrive();
+    }
+
+    private void teleopShootHighGoalFromSides() {
+        if (opMode.gamepad2.right_trigger > TRIGGER_PRESSED_THRESH) {
+            switch (alliance) {
+                case RED:
+                    drive.setCurrentPosition(FieldPositions.RSA);
+                    appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
+                    drive.line(FieldPositions.RSB);
+                    sleep(1000);
+                    appendages.shootRings();
+                    break;
+                case BLUE:
+                    drive.setCurrentPosition(FieldPositions.BSA);
+                    appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
+                    drive.line(FieldPositions.BSB);
+                    sleep(1000);
+                    appendages.shootRings();
+                    break;
+            }
+        }
+    }
+
+    private void teleopShootPowerShotsFromSides() {
+        if (opMode.gamepad2.left_trigger > TRIGGER_PRESSED_THRESH) {
+            switch (alliance) {
+                case RED:
+                    drive.setCurrentPosition(FieldPositions.RSA);
+                    shootPowershotsFromSide(FieldPositions.P6, FieldPositions.P6A);
+                    break;
+                case BLUE:
+                    drive.setCurrentPosition(FieldPositions.BSA);
+                    shootPowershotsFromSide(FieldPositions.P5, FieldPositions.P5A);
+                    break;
+            }
+        }
+    }
+
+    private void shootPowershotsFromSide(Pose2d shootingPose, double turnAngles[]) {
+        appendages.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
+        drive.line(shootingPose);
+        for (int i = 0; i < 3; i++) {
+            appendages.shootRings(1);
+            sleep(500);
+
+            if (i == 2) break;
+            drive.turnLeft(turnAngles[i]);
+            sleep(500);
+        }
     }
 
     private void commandPowershotShooting() {
@@ -95,11 +151,11 @@ public class TeleOp {
             if (!hasLocalizedRobot) return;
 
             switch (alliance) {
-                case BLUE:
-                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
-                    break;
                 case RED:
                     shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+                    break;
+                case BLUE:
+                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
                     break;
             }
         } else if (opMode.gamepad2.dpad_up) {
@@ -107,13 +163,13 @@ public class TeleOp {
             autoPowershotsShot = 0;
 
             switch (alliance) {
-                case BLUE:
-                    mecanum.setPoseEstimate(BLUE_FRONT_INIT_POWERSHOT_POSE);
-                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
-                    break;
                 case RED:
                     mecanum.setPoseEstimate(RED_FRONT_INIT_POWERSHOT_POSE);
                     shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+                    break;
+                case BLUE:
+                    mecanum.setPoseEstimate(BLUE_FRONT_INIT_POWERSHOT_POSE);
+                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
                     break;
             }
         } else if (opMode.gamepad2.dpad_left && alliance == AutoUtils.Alliance.BLUE) {
