@@ -31,26 +31,30 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         ringVision.init(alliance, startingPosition);
 
+        RevBlinkinLedDriver.BlinkinPattern basePattern;
+
         if (alliance == AutoUtils.Alliance.BLUE) {
             if (startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
                 drive.setCurrentPosition(FieldPositions.BSO);
             } else {
                 drive.setCurrentPosition(FieldPositions.BSI);
             }
-            updateLights(BlinkinPatterns.BLUE_BASE_PATTERN);
+            basePattern = BlinkinPatterns.BLUE_BASE_PATTERN;
         } else {
             if (startingPosition == AutoUtils.StartingPosition.OUTSIDE) {
                 drive.setCurrentPosition(FieldPositions.RSO);
             } else {
                 drive.setCurrentPosition(FieldPositions.RSI);
             }
-            updateLights(BlinkinPatterns.RED_BASE_PATTERN);
+            basePattern = BlinkinPatterns.RED_BASE_PATTERN;
         }
+
+        updateLights(basePattern);
 
         if (isStopRequested()) return;
 
         ringVision.setViewportPaused(true);
-        lightsOff();
+        appendages.setBlinkinPattern(basePattern);
     }
 
     // Runs till opmode start
@@ -83,18 +87,12 @@ abstract public class AbstractAuto extends LinearOpMode {
 
         while (!isStarted());
         lightThread.interrupt();
-
-        lightsOff();
     }
 
     private void flashLights(RevBlinkinLedDriver.BlinkinPattern pattern, FlashLength length) {
         appendages.setBlinkinPattern(pattern);
         sleep(length == FlashLength.LONG ? LIGHT_LONG_FLASH_ON_TIME : LIGHT_SHORT_FLASH_ON_TIME);
-        lightsOff();
-        sleep(LIGHT_FLASH_OFF_TIME);
-    }
-
-    private void lightsOff() {
         appendages.setBlinkinPattern(BlinkinPatterns.OFF);
+        sleep(LIGHT_FLASH_OFF_TIME);
     }
 }

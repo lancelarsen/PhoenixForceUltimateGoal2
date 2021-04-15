@@ -183,7 +183,10 @@ public class BotAppendages {
     }
 
     public void setShooterSpeed(double speed) {
-        setReachArmPosition(ReachArmPosition.SHOOTER_CLEARED);
+        if (reachArm.getPosition() == RETRACTED_REACH_ARM_ANGLE) {
+            setReachArmPosition(ReachArmPosition.SHOOTER_CLEARED);
+        }
+
         shooterWheel.setVelocity(speed);
     }
 

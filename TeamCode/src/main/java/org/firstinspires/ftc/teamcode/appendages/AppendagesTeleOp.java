@@ -54,8 +54,8 @@ public class AppendagesTeleOp extends BotAppendages {
         }
         double activeTime = nanoClock.seconds() - startTime;
 
-        if (80 < activeTime && activeTime < 90) {
-            setBlinkinPattern(BlinkinPatterns.ENDGAME_WARNING_PATTERN);
+        if (80 < activeTime && activeTime < 90 && activeTime % 0.5 <= 0.25) {
+            setBlinkinPattern(BlinkinPatterns.OFF);
         } else {
             switch (numRingsInRobot) {
                 case 0:
@@ -117,7 +117,7 @@ public class AppendagesTeleOp extends BotAppendages {
         preIntakeToggleState = intakeToggle.isActive();
 
         enableElevator(intakeToggle.isActive());
-        enableIntake(intakeToggle.isActive() && numRingsInRobot < GameConstants.MAX_RINGS_IN_ROBOT);
+        enableIntake(intakeToggle.isActive()/* && numRingsInRobot < GameConstants.MAX_RINGS_IN_ROBOT*/);
     }
 
     public void commandGoalGrabber() {
