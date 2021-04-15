@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.appendages.utils.EncoderUtil;
 import org.firstinspires.ftc.teamcode.appendages.utils.MapUtil;
 import org.firstinspires.ftc.teamcode.appendages.utils.MovingAverage;
@@ -33,10 +34,10 @@ public class BotAppendages {
     public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1800; //1750
     public final static double RING_SHOOTER_WHEEL_SPEED_POWER_SHOTS = 1500;
 
-    private final static long SHOOTER_ARM_EXTEND_DELAY = 400;
-    private final static long SHOOTER_ARM_RETRACT_DELAY = 300;
+    public final static long SHOOTER_ARM_EXTEND_DELAY = 400;
+    public final static long SHOOTER_ARM_RETRACT_DELAY = 300;
 
-    private final static double ELEVATOR_NO_RING_DISTANCE_THRESH = 4.0;
+    public final static double ELEVATOR_NO_RING_DISTANCE_THRESH = 4.0;
 
     public final static double INTAKE_ROLLER_SPEED = -1.0;
     public final static double INTAKE_ELEVATOR_SPEED = -1.0;
@@ -65,6 +66,8 @@ public class BotAppendages {
 
     public final NormalizedColorSensor ringDetector;
     private final MovingAverage ringDistanceMovingAverage = new MovingAverage(3);
+    private boolean preRingInElevator = false;
+    protected int numRingsInRobot = -1;
 
     public final DcMotor intakeRoller;
     public final DcMotor intakeElevator;
@@ -185,13 +188,16 @@ public class BotAppendages {
     }
 
     public void shootRings() {
-        shootRings(3);
+        shootRings(GameConstants.MAX_RINGS_IN_ROBOT);
     }
 
     public void shootRings(int num) {
         for (int i = 0; i < num; i++) {
             extendShooterArm(true);
             sleep(SHOOTER_ARM_EXTEND_DELAY);
+
+            if (numRingsInRobot > 0) numRingsInRobot--;
+
             extendShooterArm(false);
             sleep(SHOOTER_ARM_RETRACT_DELAY);
         }
@@ -203,6 +209,14 @@ public class BotAppendages {
         } else {
             shooterArm.setPosition(RETRACTED_SHOOTER_ARM_ANGLE);
         }
+    }
+
+    public void updateRingsInElevator() {
+        boolean ringInElevator = isRingInElevator();
+        if (ringInElevator && ringInElevator != preRingInElevator) {
+            if (numRingsInRobot < GameConstants.MAX_RINGS_IN_ROBOT) numRingsInRobot++;
+        }
+        preRingInElevator = ringInElevator;
     }
 
     public boolean isRingInElevator() {

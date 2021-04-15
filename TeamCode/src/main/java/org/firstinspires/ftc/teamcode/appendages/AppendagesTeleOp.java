@@ -5,6 +5,7 @@ import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 
+import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.ButtonToggle;
 import org.firstinspires.ftc.teamcode.opmodes.teleop.util.GamepadUtils;
@@ -22,8 +23,6 @@ public class AppendagesTeleOp extends BotAppendages {
 
     private ButtonToggle intakeToggle = new ButtonToggle(true);
     private boolean preIntakeToggleState = false;
-    private boolean preRingInElevator = false;
-    private int numRingsInRobot = -1;
 
     private ButtonToggle goalLifterAdjToggle = new ButtonToggle();
     private boolean preAdjGoalLifter;
@@ -33,8 +32,6 @@ public class AppendagesTeleOp extends BotAppendages {
     private final Runnable shootTask = () -> {
         while (opMode.opModeIsActive()) {
             shootRings(1);
-
-            if (numRingsInRobot > 0) numRingsInRobot--;
         }
     };
 
@@ -105,11 +102,7 @@ public class AppendagesTeleOp extends BotAppendages {
     public void commandIntake() {
         setIntakeDirection(opMode.gamepad2.a ? Direction.REVERSE : Direction.FORWARD);
 
-        boolean ringInElevator = isRingInElevator();
-        if (ringInElevator && ringInElevator != preRingInElevator) {
-            if (numRingsInRobot < 3) numRingsInRobot++;
-        }
-        preRingInElevator = ringInElevator;
+        updateRingsInElevator();
 
         opMode.telemetry.addData("ringCount", numRingsInRobot);
         opMode.telemetry.update();
@@ -117,14 +110,14 @@ public class AppendagesTeleOp extends BotAppendages {
         // If intake toggled from on to off when # of rings in robot 3 (therefore the intake already disabled),
         // don't toggle intake and let the user intake one more ring, assuming a sensor error
         intakeToggle.update(opMode.gamepad2.b);
-        if (numRingsInRobot == 3 && preIntakeToggleState == true && intakeToggle.isActive() == false) {
+        if (numRingsInRobot == GameConstants.MAX_RINGS_IN_ROBOT && preIntakeToggleState == true && intakeToggle.isActive() == false) {
             numRingsInRobot--;
             intakeToggle.setActive(true);
         }
         preIntakeToggleState = intakeToggle.isActive();
 
         enableElevator(intakeToggle.isActive());
-        enableIntake(intakeToggle.isActive() && numRingsInRobot < 3);
+        enableIntake(intakeToggle.isActive() && numRingsInRobot < GameConstants.MAX_RINGS_IN_ROBOT);
     }
 
     public void commandGoalGrabber() {

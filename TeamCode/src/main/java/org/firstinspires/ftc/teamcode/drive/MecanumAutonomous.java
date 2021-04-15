@@ -36,12 +36,15 @@ public class MecanumAutonomous extends BotMecanumDrive {
         FAST
     }
 
+    private LinearOpMode opMode;
+
     private Pose2d position;
     private Speed speed = Speed.FAST;
     private boolean reversed = false;
 
     public MecanumAutonomous(LinearOpMode opMode) {
         super(opMode.hardwareMap);
+        this.opMode = opMode;
     }
 
     public void setSpeed(Speed speed) {
@@ -150,7 +153,11 @@ public class MecanumAutonomous extends BotMecanumDrive {
         }
 
         Trajectory trajectory = builder.build();
-        followTrajectory(trajectory);
+        followTrajectoryAsync(trajectory);
+        while (isBusy() && opMode.opModeIsActive() && !Thread.interrupted()) {
+            update();
+        }
+
         position = trajectory.end();
     }
 
