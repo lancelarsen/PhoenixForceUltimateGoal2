@@ -117,7 +117,8 @@ public class AppendagesTeleOp extends BotAppendages {
         preIntakeToggleState = intakeToggle.isActive();
 
         enableElevator(intakeToggle.isActive());
-        enableIntake(intakeToggle.isActive()/* && numRingsInRobot < GameConstants.MAX_RINGS_IN_ROBOT*/);
+        enableIntake(intakeToggle.isActive() && numRingsInRobot < GameConstants.MAX_RINGS_IN_ROBOT);
+        setReachArmPosition(opMode.gamepad1.x ? ReachArmPosition.EXTENDED : ReachArmPosition.SHOOTER_CLEARED);
     }
 
     public void commandGoalGrabber() {
