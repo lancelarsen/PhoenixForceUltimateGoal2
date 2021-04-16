@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
@@ -9,6 +10,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 import org.firstinspires.ftc.teamcode.vision.RingVision;
 
+@Disabled
 @Autonomous(group = "auto")
 public class B_IN_PS_RINGS_HG_WG_L extends AbstractAuto {
     public void runOpMode() {

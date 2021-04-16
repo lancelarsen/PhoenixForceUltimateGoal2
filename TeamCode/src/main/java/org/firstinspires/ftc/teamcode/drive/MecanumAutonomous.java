@@ -17,7 +17,7 @@ import static org.firstinspires.ftc.teamcode.drive.DriveConstants.MAX_VEL;
 
 public class MecanumAutonomous extends BotMecanumDrive {
     // In inches per second
-    private static double VERY_SLOW_MAX_VEL = 10;
+    private static double VERY_SLOW_MAX_VEL = 3;
     private static double SLOW_MAX_VEL = DriveConstants.MAX_VEL / 4;
     private static double MEDIUM_MAX_VEL = DriveConstants.MAX_VEL / 2;
     private static double FAST_MAX_VEL = DriveConstants.MAX_VEL;

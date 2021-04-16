@@ -43,7 +43,8 @@ public class FieldPositions {
     public final static Pose2d BTO = new Pose2d(-5, 58, Math.toRadians(-30));        //--- high goal, outside
     public final static Pose2d BTO2 = new Pose2d(-4, 55, Math.toRadians(-10));       //--- high goal, outside
 
-    public final static Pose2d RTI = new Pose2d(-5, -16, Math.toRadians(-30));           //--- high goal, inside
+    public final static Pose2d RTI = new Pose2d(-5, -16, Math.toRadians(-12));           //--- high goal, inside
+    public final static Pose2d RTI_B = new Pose2d(-5, -16, Math.toRadians(-10));     //--- high goal, inside (correction angle for inside mission)
     public final static Pose2d BTI = new Pose2d(-5, 11, Math.toRadians(30));           //--- high goal, inside
 
     //----------------------------------------------------------------------
@@ -55,10 +56,11 @@ public class FieldPositions {
     //----------------------------------------------------------------------
     //--- Ring pickup positions
     //----------------------------------------------------------------------
-    public final static Pose2d RR = new Pose2d(0, 0, SetFacing(Facing.LEFT));      //--- red pickup point
-    public final static Pose2d RR_A = new Pose2d(0, 0, SetFacing(Facing.LEFT));    //--- move forward to pickup
-    public final static Pose2d BR = new Pose2d(0, 0, SetFacing(Facing.RIGHT));     //--- blue pickup point
-    public final static Pose2d BR_A = new Pose2d(0, 0, SetFacing(Facing.RIGHT));   //--- move forward to pickup
+    public final static Pose2d RR = new Pose2d(-25, -20, SetFacing(Facing.RIGHT));      //--- red pickup point
+    public final static Pose2d RR_A = new Pose2d(-23, -30, SetFacing(Facing.RIGHT));    //--- move forward to pickup
+    public final static Pose2d RR_B = new Pose2d(-23, -40, SetFacing(Facing.RIGHT));    //--- move forward to pickup
+    public final static Pose2d BR = new Pose2d(-25, 20, SetFacing(Facing.LEFT));     //--- blue pickup point
+    public final static Pose2d BR_A = new Pose2d(-25, 35, SetFacing(Facing.LEFT));   //--- move forward to pickup
 
     //----------------------------------------------------------------------
     //--- Wobble goal pickup positions (outside)
@@ -76,7 +78,7 @@ public class FieldPositions {
     //----------------------------------------------------------------------
     public final static Pose2d RI_WA = new Pose2d(27, -61, SetFacing(Facing.LEFT));             //---XX red A
     public final static Pose2d RI_WB = new Pose2d(35, -23, SetFacing(Facing.BACK_ROTATE_LEFT)); //---XX red B
-    public final static Pose2d RI_WC = new Pose2d(58, -48, SetFacing(Facing.BACK_ROTATE_LEFT)); //---XX red C
+    public final static Pose2d RI_WC = new Pose2d(58, -51, SetFacing(Facing.BACK_ROTATE_LEFT)); //---XX red C
 
     public final static Pose2d BI_WA = new Pose2d(27, 61, SetFacing(Facing.LEFT));  //---XX blue A
     public final static Pose2d BI_WB = new Pose2d(35, 23, SetFacing(Facing.GOAL));  //---XX blue B
@@ -85,8 +87,8 @@ public class FieldPositions {
     //----------------------------------------------------------------------
     //--- Transition positions
     //----------------------------------------------------------------------
-    public final static Pose2d BX2 = new Pose2d(30, 15, SetFacing(Facing.GOAL));                   //---
-    public final static Pose2d RX2 = new Pose2d(30, -15, SetFacing(Facing.BACK_ROTATE_RIGHT));   //---X center of close to target zone (reversed)
+    public final static Pose2d BX2 = new Pose2d(35, 15, SetFacing(Facing.GOAL));                   //---
+    public final static Pose2d RX2 = new Pose2d(35, -15, SetFacing(Facing.BACK_ROTATE_RIGHT));   //---X center of close to target zone (reversed)
 
     public final static Pose2d BX6 = new Pose2d(41, 55, SetFacing(Facing.RIGHT));   //--- middle of the blue target zones
     public final static Pose2d RX6 = new Pose2d(35, -64, SetFacing(Facing.RIGHT));               //---X middle of out red zones

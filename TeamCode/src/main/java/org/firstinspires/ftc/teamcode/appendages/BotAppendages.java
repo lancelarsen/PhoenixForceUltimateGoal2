@@ -31,10 +31,10 @@ public class BotAppendages {
     public final static double SHOOTER_TILTER_LOADING_ANGLE = 0.4;
     public final static double EXTENDED_SHOOTER_ARM_ANGLE = 0.7;
     public final static double RETRACTED_SHOOTER_ARM_ANGLE = 0.3;
-    public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1800; //1750
+    public final static double RING_SHOOTER_WHEEL_SPEED_HIGH_GOAL = 1825; //1750
     public final static double RING_SHOOTER_WHEEL_SPEED_POWER_SHOTS = 1500;
 
-    public final static long SHOOTER_ARM_EXTEND_DELAY = 400;
+    public final static long SHOOTER_ARM_EXTEND_DELAY = 300;
     public final static long SHOOTER_ARM_RETRACT_DELAY = 300;
 
     public final static double ELEVATOR_NO_RING_DISTANCE_THRESH = 4.0;

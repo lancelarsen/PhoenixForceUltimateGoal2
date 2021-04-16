@@ -9,6 +9,7 @@ import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 
+@Disabled
 @Autonomous(group = "auto")
 public class R_OUT_L extends AbstractAuto {
     public void runOpMode() {

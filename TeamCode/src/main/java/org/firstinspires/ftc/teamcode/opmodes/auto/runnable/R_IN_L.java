@@ -1,12 +1,14 @@
 package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
 
+@Disabled
 @Autonomous(group = "auto")
 public class R_IN_L extends AbstractAuto {
     public void runOpMode() {
