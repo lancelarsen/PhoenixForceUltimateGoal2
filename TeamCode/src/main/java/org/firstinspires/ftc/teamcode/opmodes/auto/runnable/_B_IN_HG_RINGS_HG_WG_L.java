@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto.runnable;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 import org.firstinspires.ftc.teamcode.appendages.BotAppendages;
+import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AbstractAuto;
 import org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils;
 import org.firstinspires.ftc.teamcode.opmodes.auto.FieldPositions;
@@ -22,44 +23,46 @@ public class _B_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
         drive.line(FieldPositions.BSI_W);
         appendages.wobbleGoalGrab();
 
+        appendages.ringIntakeStop();
+
         //--- Shoot top goal
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
         drive.curve(FieldPositions.BTI);
         appendages.shootRings();
-        appendages.shooterOff();
 
         //--- Go get rings and shoot!
         switch (targetZone) {
             case ZONE_A:
                 break;
             case ZONE_B:
-//                drive.turnRight(15);
-//                drive.line(FieldPositions.R2A);
-//                appendages.ringIntakeStart();
-//                drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
-//                drive.line(FieldPositions.R2B);
-//                appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-//                drive.setSpeed(MecanumAutonomous.Speed.FAST);
-//                drive.turnLeft(15);
-//                drive.curve(FieldPositions.T1);
-//                appendages.shootRings();
-//                appendages.shooterOff();
-//                appendages.ringIntakeStop();
+                drive.line(FieldPositions.BR);
+
+                appendages.intakeThreeRings();
+                drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
+                drive.line(FieldPositions.BR_B);
+
+                drive.setSpeed(MecanumAutonomous.Speed.FAST);
+                drive.line(FieldPositions.BTI_B);
+
+                appendages.shootRings(1);
+                appendages.shooterOff();
                 break;
             case ZONE_C:
+                drive.line(FieldPositions.BR);
+
+                appendages.ringIntakeReverseStart();    //--- knock over stack
+                drive.line(FieldPositions.BR_A);
+
                 //TODO: Count rings to stop taking in too many
-//                drive.turnRight(15);
-//                drive.line(FieldPositions.R2A);
-//                drive.line(FieldPositions.R2B);
-//                drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
-//                appendages.ringIntakeStart();
-//                drive.line(FieldPositions.R2C);
-//                appendages.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-//                drive.setSpeed(MecanumAutonomous.Speed.FAST);
-//                drive.curve(FieldPositions.T1);
-//                appendages.shootRings();
-//                appendages.shooterOff();
-//                appendages.ringIntakeStop();
+                appendages.intakeThreeRings();
+                drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
+                drive.line(FieldPositions.BR_B);
+
+                drive.setSpeed(MecanumAutonomous.Speed.FAST);
+                drive.line(FieldPositions.BTI_B);
+                sleep(2000);                //--- wait for rings to drop into indexer
+                appendages.shootRings();
+                appendages.shooterOff();
                 break;
         }
 
@@ -67,7 +70,7 @@ public class _B_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
         switch (targetZone) {
             case ZONE_A:
                 drive.line(FieldPositions.BX2);
-                sleep(10000);
+                sleep(7000);
                 drive.line(FieldPositions.BI_WA);
                 break;
             case ZONE_B:
@@ -81,9 +84,10 @@ public class _B_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
         //--- Park on line
         switch (targetZone) {
             case ZONE_A:
+                drive.line(FieldPositions.BX2);
             case ZONE_B:
             case ZONE_C:
-                drive.line(FieldPositions.L1); break;
+                drive.line(FieldPositions.BL3); break;
         }
-    }
+   }
 }

@@ -67,7 +67,7 @@ public class BotAppendages {
     public final NormalizedColorSensor ringDetector;
     private final MovingAverage ringDistanceMovingAverage = new MovingAverage(3);
     private boolean preRingInElevator = false;
-    protected int numRingsInRobot = -1;
+    protected volatile int numRingsInRobot = -1;
 
     public final DcMotor intakeRoller;
     public final DcMotor intakeElevator;
@@ -195,15 +195,17 @@ public class BotAppendages {
     }
 
     public void shootRings(int num) {
+        try {
         for (int i = 0; i < num; i++) {
             extendShooterArm(true);
-            sleep(SHOOTER_ARM_EXTEND_DELAY);
+            Thread.sleep(SHOOTER_ARM_EXTEND_DELAY);
 
             if (numRingsInRobot > 0) numRingsInRobot--;
 
             extendShooterArm(false);
-            sleep(SHOOTER_ARM_RETRACT_DELAY);
+            Thread.sleep(SHOOTER_ARM_RETRACT_DELAY);
         }
+        } catch (InterruptedException e) {};
     }
 
     public void extendShooterArm(boolean extended) {

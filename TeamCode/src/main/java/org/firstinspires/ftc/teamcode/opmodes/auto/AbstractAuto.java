@@ -49,16 +49,19 @@ abstract public class AbstractAuto extends LinearOpMode {
             basePattern = BlinkinPatterns.RED_BASE_PATTERN;
         }
 
-        updateLights(basePattern);
+        updatePregameLights(basePattern);
 
         if (isStopRequested()) return;
 
         ringVision.setViewportPaused(true);
         appendages.setBlinkinPattern(basePattern);
+
+        appendages.asyncUpdateRingsInElevator();
+        appendages.updateLights(alliance);
     }
 
     // Runs till opmode start
-    public void updateLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
+    public void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
         Runnable lightTask = () -> {
             while (!Thread.interrupted()) {
                 flashLights(basePattern, FlashLength.LONG);

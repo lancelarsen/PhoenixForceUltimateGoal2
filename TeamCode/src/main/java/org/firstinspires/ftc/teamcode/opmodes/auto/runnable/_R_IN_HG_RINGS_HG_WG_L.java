@@ -37,7 +37,7 @@ public class _R_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
             case ZONE_B:
                 drive.line(FieldPositions.RR);
 
-                appendages.ringIntakeStart();
+                appendages.intakeThreeRings();
                 drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
                 drive.line(FieldPositions.RR_B);
 
@@ -46,7 +46,6 @@ public class _R_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
 
                 appendages.shootRings(1);
                 appendages.shooterOff();
-                appendages.ringIntakeStop();
                 break;
             case ZONE_C:
                 drive.line(FieldPositions.RR);
@@ -55,7 +54,7 @@ public class _R_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
                 drive.line(FieldPositions.RR_A);
 
                 //TODO: Count rings to stop taking in too many
-                appendages.ringIntakeStart();
+                appendages.intakeThreeRings();
                 drive.setSpeed(MecanumAutonomous.Speed.VERY_SLOW);
                 drive.line(FieldPositions.RR_B);
 
@@ -64,7 +63,6 @@ public class _R_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
                 sleep(2000);                //--- wait for rings to drop into indexer
                 appendages.shootRings();
                 appendages.shooterOff();
-                appendages.ringIntakeStop();
                 break;
         }
 
@@ -89,7 +87,7 @@ public class _R_IN_HG_RINGS_HG_WG_L extends AbstractAuto {
                 drive.line(FieldPositions.RX2);
             case ZONE_B:
             case ZONE_C:
-                drive.line(FieldPositions.L2); break;
+                drive.line(FieldPositions.RL3); break;
         }
     }
 }

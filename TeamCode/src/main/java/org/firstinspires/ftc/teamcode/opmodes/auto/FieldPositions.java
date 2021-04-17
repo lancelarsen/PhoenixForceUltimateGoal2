@@ -28,6 +28,10 @@ public class FieldPositions {
     //----------------------------------------------------------------------
     //--- Field line positions
     //----------------------------------------------------------------------
+
+    public final static Pose2d RL3 = new Pose2d(10, -11, SetFacing(Facing.GOAL));   //--- by middle line, on line
+    public final static Pose2d BL3 = new Pose2d(10, 11, SetFacing(Facing.GOAL));    //--- by middle line, on line
+
     public final static Pose2d RL2 = new Pose2d(-4, -63, SetFacing(Facing.GOAL));   //---X against wall, behind white line
     public final static Pose2d BL2 = new Pose2d(-4, 63, SetFacing(Facing.GOAL));    //--- against wall, behind white line
 
@@ -45,7 +49,8 @@ public class FieldPositions {
 
     public final static Pose2d RTI = new Pose2d(-5, -16, Math.toRadians(-12));           //--- high goal, inside
     public final static Pose2d RTI_B = new Pose2d(-5, -16, Math.toRadians(-10));     //--- high goal, inside (correction angle for inside mission)
-    public final static Pose2d BTI = new Pose2d(-5, 11, Math.toRadians(30));           //--- high goal, inside
+    public final static Pose2d BTI_B = new Pose2d(-5, 18, Math.toRadians(10));     //--- high goal, inside (correction angle for inside mission)
+    public final static Pose2d BTI = new Pose2d(-5, 11, Math.toRadians(17));           //--- high goal, inside
 
     //----------------------------------------------------------------------
     //--- Targeting positions (power shots)
@@ -60,8 +65,8 @@ public class FieldPositions {
     public final static Pose2d RR_A = new Pose2d(-23, -30, SetFacing(Facing.RIGHT));    //--- move forward to pickup
     public final static Pose2d RR_B = new Pose2d(-23, -40, SetFacing(Facing.RIGHT));    //--- move forward to pickup
     public final static Pose2d BR = new Pose2d(-25, 20, SetFacing(Facing.LEFT));     //--- blue pickup point
-    public final static Pose2d BR_A = new Pose2d(-25, 35, SetFacing(Facing.LEFT));   //--- move forward to pickup
-
+    public final static Pose2d BR_A = new Pose2d(-23, 30, SetFacing(Facing.LEFT));   //--- move forward to pickup
+    public final static Pose2d BR_B = new Pose2d(-23,40 , SetFacing(Facing.LEFT));   //---
     //----------------------------------------------------------------------
     //--- Wobble goal pickup positions (outside)
     //----------------------------------------------------------------------

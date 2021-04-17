@@ -51,20 +51,18 @@ import static org.firstinspires.ftc.teamcode.opmodes.auto.AutoUtils.sleep;
 //----------------------------------------------------------------------
 
 public class TeleOp {
-    private LinearOpMode opMode;
-    private AutoUtils.Alliance alliance;
+    private volatile LinearOpMode opMode;
+    private volatile AutoUtils.Alliance alliance;
 
-    public volatile MecanumAutonomous mecanumAuto;
     private volatile MecanumTeleOp mecanumTeleop;
 
     private volatile AppendagesTeleOp appendagesTeleop;
-    private volatile AppendagesAutonomous appendagesAuto;
 
-    private GamepadUtils driverGamepad;
-    private Thread shootThread;
+    private volatile GamepadUtils driverGamepad;
+    private volatile Thread shootThread;
 
-    private boolean hasLocalizedRobot = false;
-    private int autoPowershotsShot = 0;
+    private volatile boolean hasLocalizedRobot = false;
+    private volatile int autoPowershotsShot = 0;
 
     private final static Pose2d BLUE_SIDE_INIT_POWERSHOT_POSE = new Pose2d(18, 54, Math.toRadians(0));
     private final static Pose2d BLUE_FRONT_INIT_POWERSHOT_POSE = new Pose2d(58, 11, Math.toRadians(0));
@@ -79,10 +77,8 @@ public class TeleOp {
         this.alliance = alliance;
 
         mecanumTeleop = new MecanumTeleOp(opMode);
-        mecanumAuto = new MecanumAutonomous(opMode);
 
         appendagesTeleop = new AppendagesTeleOp(opMode);
-        appendagesAuto = new AppendagesAutonomous(opMode);
 
         driverGamepad = new GamepadUtils(opMode.gamepad1);
     }
@@ -93,73 +89,112 @@ public class TeleOp {
         appendagesTeleop.commandShooter();
         appendagesTeleop.commandGoalGrabber();
 
-        commandPowershotShooting();
-        shootHighGoalFromSide();
-        shootPowerShotsFromSide();
+        commandHighGoalShooting();
+        commandFrontPowershotShooting();
+        commandSidePowershotShooting();
 
         mecanumTeleop.enableTurning(!appendagesTeleop.isAdjGoalLifterPosition());
         mecanumTeleop.arcadeDrive();
     }
 
-    private void shootHighGoalFromSide() {
+    private void commandHighGoalShooting() {
         if (opMode.gamepad2.right_trigger > TRIGGER_PRESSED_THRESH) {
             switch (alliance) {
                 case RED:
-                    mecanumAuto.setCurrentPosition(FieldPositions.RL2);
-                    appendagesTeleop.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-                    mecanumAuto.line(FieldPositions.RTO);
-                    sleep(1000);
-                    appendagesTeleop.shootRings();
+                    mecanumTeleop.setPoseEstimate(FieldPositions.RL2);
+                    shootHighGoal(FieldPositions.RTO);
                     break;
                 case BLUE:
-                    mecanumAuto.setCurrentPosition(FieldPositions.BL2);
-                    appendagesTeleop.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
-                    mecanumAuto.line(FieldPositions.BTO);
-                    sleep(1000);
-                    appendagesTeleop.shootRings();
+                    mecanumTeleop.setPoseEstimate(FieldPositions.BL2);
+                    shootHighGoal(FieldPositions.BTO);
                     break;
             }
         }
     }
 
-    private void shootPowerShotsFromSide() {
+    private void shootHighGoal(Pose2d shootingPose) {
+        Runnable shootTask = () -> {
+            try {
+                appendagesTeleop.setShooterSpeed(BotAppendages.ShooterSpeed.HIGH_GOAL);
+
+                Trajectory shootingTrajectory = line(shootingPose);
+
+                mecanumTeleop.followTrajectoryAsync(shootingTrajectory);
+                while (mecanumTeleop.isBusy()) {
+                    mecanumTeleop.update();
+                    if (Thread.interrupted()) {
+                        mecanumTeleop.cancelFollowing();
+                        throw new InterruptedException();
+                    }
+                }
+
+                appendagesTeleop.shootRings();
+            } catch (InterruptedException e) {};
+        };
+
+        shootThread = new Thread(shootTask);
+        shootThread.start();
+
+        waitForShootThread();
+    }
+
+    private void commandSidePowershotShooting() {
         if (opMode.gamepad2.left_trigger > TRIGGER_PRESSED_THRESH) {
             switch (alliance) {
                 case RED:
-                    appendagesAuto.ringIntakeStop();
-                    mecanumAuto.setCurrentPosition(FieldPositions.RL2);
+                    mecanumTeleop.setPoseEstimate(FieldPositions.RL2);
                     shootPowershotsFromSide(FieldPositions.RTO_TELE_PS, FieldPositions.RTO_TELE_PSA);
-                    appendagesAuto.ringIntakeStart();
                     break;
                 case BLUE:
-                    mecanumAuto.setCurrentPosition(FieldPositions.BL2);
+                    mecanumTeleop.setPoseEstimate(FieldPositions.BL2);
                     shootPowershotsFromSide(FieldPositions.P5, FieldPositions.P5A);
                     break;
             }
         }
     }
 
-     private void shootPowershotsFromSide(Pose2d shootingPose, double turnAngles[]) {
-        appendagesTeleop.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
-        sleep(2000);
-        mecanumAuto.line(shootingPose);
-        for (int i = 0; i < 3; i++) {
-            appendagesTeleop.shootRings(1);
-            if (i == 2) break;
-            mecanumAuto.turnLeft(turnAngles[i]);
-        }
+    private void shootPowershotsFromSide(Pose2d shootingPose, double turnAngles[]) {
+        Runnable shootTask = () -> {
+            try {
+                appendagesTeleop.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
+                Thread.sleep(2000);
+
+                Trajectory shootingTrajectory = line(shootingPose);
+
+                mecanumTeleop.followTrajectoryAsync(shootingTrajectory);
+                while (mecanumTeleop.isBusy()) {
+                    mecanumTeleop.update();
+                    if (Thread.interrupted()) {
+                        mecanumTeleop.cancelFollowing();
+                        throw new InterruptedException();
+                    }
+                }
+
+                for (int i = 0; i < 3; i++) {
+                    appendagesTeleop.shootRings(1);
+                    if (i == 2) break;
+                    mecanumTeleop.turnAsync(Math.toRadians(turnAngles[i]));
+                    mecanumTeleop.waitForIdle();
+                }
+            } catch (InterruptedException e) {};
+        };
+
+        shootThread = new Thread(shootTask);
+        shootThread.start();
+
+        waitForShootThread();
     }
 
-    private void commandPowershotShooting() {
+    private void commandFrontPowershotShooting() {
         if (opMode.gamepad2.left_bumper) {
             if (!hasLocalizedRobot) return;
 
             switch (alliance) {
                 case RED:
-                    shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+                    shootPowershotsFromFront(FieldPositions.P4, FieldPositions.P4A);
                     break;
                 case BLUE:
-                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
+                    shootPowershotsFromFront(FieldPositions.P2, FieldPositions.P2A);
                     break;
             }
         } else if (opMode.gamepad2.dpad_up) {
@@ -169,11 +204,11 @@ public class TeleOp {
             switch (alliance) {
                 case RED:
                     mecanumTeleop.setPoseEstimate(RED_FRONT_INIT_POWERSHOT_POSE);
-                    shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+                    shootPowershotsFromFront(FieldPositions.P4, FieldPositions.P4A);
                     break;
                 case BLUE:
                     mecanumTeleop.setPoseEstimate(BLUE_FRONT_INIT_POWERSHOT_POSE);
-                    shootPowershots(FieldPositions.P2, FieldPositions.P2A);
+                    shootPowershotsFromFront(FieldPositions.P2, FieldPositions.P2A);
                     break;
             }
         } else if (opMode.gamepad2.dpad_left && alliance == AutoUtils.Alliance.BLUE) {
@@ -181,31 +216,29 @@ public class TeleOp {
             autoPowershotsShot = 0;
 
             mecanumTeleop.setPoseEstimate(BLUE_SIDE_INIT_POWERSHOT_POSE);
-            shootPowershots(FieldPositions.P2, FieldPositions.P2A);
+            shootPowershotsFromFront(FieldPositions.P2, FieldPositions.P2A);
         } else if (opMode.gamepad2.dpad_right && alliance == AutoUtils.Alliance.RED) {
             hasLocalizedRobot = true;
             autoPowershotsShot = 0;
 
             mecanumTeleop.setPoseEstimate(RED_SIDE_INIT_POWERSHOT_POSE);
-            shootPowershots(FieldPositions.P4, FieldPositions.P4A);
+            shootPowershotsFromFront(FieldPositions.P4, FieldPositions.P4A);
         }
     }
 
-    private void shootPowershots(Pose2d shootingPose, double turnAngles[]) {
+    private void shootPowershotsFromFront(Pose2d shootingPose, double turnAngles[]) {
         Runnable shootTask = () -> {
             try {
                 appendagesTeleop.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
 
-                Trajectory shootingTrajectory = mecanumTeleop.trajectoryBuilder(mecanumTeleop.getPoseEstimate())
-                        .lineToLinearHeading(shootingPose)
-                        .build();
+                Trajectory shootingTrajectory = line(shootingPose);
 
                 mecanumTeleop.followTrajectoryAsync(shootingTrajectory);
                 while (mecanumTeleop.isBusy()) {
                     mecanumTeleop.update();
                     if (Thread.interrupted()) {
                         mecanumTeleop.cancelFollowing();
-                        return;
+                        throw new InterruptedException();
                     }
                 }
 
@@ -234,9 +267,32 @@ public class TeleOp {
         shootThread = new Thread(shootTask);
         shootThread.start();
 
+        waitForShootThread();
+    }
+
+    private void waitForShootThread() {
         while (shootThread.isAlive()) {
+            //appendagesTeleop.updateLights(alliance);
+
             if (driverGamepad.areJoysticksActive() || driverGamepad.isDpadActive() || !opMode.opModeIsActive()) {
                 shootThread.interrupt();
+            }
+        }
+    }
+
+    private Trajectory line(Pose2d pose) {
+        return mecanumTeleop.trajectoryBuilder(mecanumTeleop.getPoseEstimate())
+                .lineToLinearHeading(pose)
+                .build();
+    }
+
+    private void follow(Trajectory trajectory) throws InterruptedException {
+        mecanumTeleop.followTrajectoryAsync(trajectory);
+        while (mecanumTeleop.isBusy()) {
+            mecanumTeleop.update();
+            if (Thread.interrupted()) {
+                mecanumTeleop.cancelFollowing();
+                throw new InterruptedException();
             }
         }
     }
