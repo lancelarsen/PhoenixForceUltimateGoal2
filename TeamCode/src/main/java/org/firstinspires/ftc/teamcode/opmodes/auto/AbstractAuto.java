@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.opmodes.auto;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
+import org.firstinspires.ftc.teamcode.GameConstants;
 import org.firstinspires.ftc.teamcode.appendages.AppendagesAutonomous;
 import org.firstinspires.ftc.teamcode.appendages.BlinkinPatterns;
 import org.firstinspires.ftc.teamcode.drive.MecanumAutonomous;
@@ -12,6 +13,9 @@ abstract public class AbstractAuto extends LinearOpMode {
     public MecanumAutonomous drive;
     public volatile AppendagesAutonomous appendages;
     public volatile RingVision ringVision;
+
+    private static final long POWERSHOT_SHOOT_DELAY = 500;
+    private static final long POWERSHOT_MOVE_DELAY = 500;
 
     private static final long LIGHT_LONG_FLASH_ON_TIME = 1500;
     private static final long LIGHT_SHORT_FLASH_ON_TIME = 500;
@@ -60,8 +64,20 @@ abstract public class AbstractAuto extends LinearOpMode {
         appendages.updateLights(alliance);
     }
 
+    public void shootPowershots(double turnAngles[]) {
+        for (int i = 0; i < GameConstants.MAX_RINGS_IN_ROBOT; i++) {
+            appendages.shootRings(1);
+            sleep(POWERSHOT_SHOOT_DELAY);
+
+            if (i == GameConstants.MAX_RINGS_IN_ROBOT - 1) break;
+
+            drive.turnLeft(turnAngles[i]);
+            sleep(POWERSHOT_MOVE_DELAY);
+        }
+    }
+
     // Runs till opmode start
-    public void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
+    private void updatePregameLights(RevBlinkinLedDriver.BlinkinPattern basePattern) {
         Runnable lightTask = () -> {
             while (!Thread.interrupted()) {
                 flashLights(basePattern, FlashLength.LONG);

@@ -26,14 +26,7 @@ public class R_IN_PS_WG_RINGS_HG_L extends AbstractAuto {
         //--- Shoot power shots
         appendages.setShooterSpeed(BotAppendages.ShooterSpeed.POWERSHOTS);
         drive.line(FieldPositions.P4);
-        for (int i = 0; i < 3; i++) {
-            appendages.shootRings(1);
-            sleep(500);
-
-            if (i == 2) break;
-            drive.turnLeft(FieldPositions.P4A[i]);
-            sleep(500);
-        }
+        shootPowershots(FieldPositions.P4A);
         appendages.shooterOff();
 
         //--- Drop wobble goal

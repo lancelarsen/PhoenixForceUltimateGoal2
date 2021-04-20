@@ -28,7 +28,6 @@ public class FieldPositions {
     //----------------------------------------------------------------------
     //--- Field line positions
     //----------------------------------------------------------------------
-
     public final static Pose2d RL3 = new Pose2d(10, -11, SetFacing(Facing.GOAL));   //--- by middle line, on line
     public final static Pose2d BL3 = new Pose2d(10, 11, SetFacing(Facing.GOAL));    //--- by middle line, on line
 
